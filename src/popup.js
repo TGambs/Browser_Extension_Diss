@@ -22,13 +22,13 @@ async function getNewKeyPair() {
         Public Key Length: ${response.publicKeyLength} bytes<br>
         <small>Public Key (base64): ${response.publicKey.substring(
           0,
-          50
+          500
         )}...</small><br>
 
         Secret Key Length: ${response.secretKeyLength} bytes<br><br>
         <small>Secret Key (base64): ${response.secretKey.substring(
           0,
-          50
+          500
         )}...</small>
       `;
 
