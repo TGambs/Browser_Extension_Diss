@@ -63,8 +63,8 @@ async function getRanNum() {
       let output = `<p>Random Number: ${response.ranNum}</p>`;
 
       // if the stored numbers length isnt 0 then add the stored numbers to the output
-      if (response.history && response.history.length > 0) {
-        output += "<p>Stored numbers: " + response.history.join(", ") + "</p>";
+      if (response.nHistory && response.nHistory.length > 0) {
+        output += "<p>Stored numbers: " + response.nHistory.join(", ") + "</p>";
       }
 
       // write the genKeys data to the output element
@@ -80,6 +80,24 @@ async function getRanNum() {
     console.error("Error:", error);
     document.getElementById("ranNumOut").innerHTML =
       `<strong>Error:</strong> ${error.message}`;
+  }
+}
+
+async function resetHistory() {
+  try {
+    const response = await chrome.runtime.sendMessage({
+      action: "resetRandomNumbers",
+    });
+    console.log("Response from background:", response);
+
+    if (response.success) {
+      document.getElementById("ranNumOut").innerHTML = "<p>History reset.</p>";
+    } else {
+      document.getElementById("ranNumOut").innerHTML =
+        `<strong>Error:</strong> ${response.error}`;
+    }
+  } catch (err) {
+    console.error(err);
   }
 }
 
@@ -103,6 +121,14 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("random number button listener");
   } else {
     console.error("ranNumBttn not found");
+  }
+
+  const resetNumsBtn = document.getElementById("resetNumsBtn");
+  if (resetNumsBtn) {
+    resetNumsBtn.addEventListener("click", resetHistory);
+    console.log("storage reset");
+  } else {
+    console.error("reset button not found");
   }
 });
 

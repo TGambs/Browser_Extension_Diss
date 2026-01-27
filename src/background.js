@@ -3,6 +3,7 @@
 // recieve data using "chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {});"
 // use crypto.subtle for AES computations
 import { MlKem768 } from "crystals-kyber-js";
+import { error } from "jquery";
 
 console.log("\n--- Background.js loading ---");
 
@@ -63,17 +64,20 @@ async function genRandNumber() {
   // gen number
   const ranNum = Math.floor(Math.random() * 100);
 
+  const { randomNums } = await chrome.storage.local.get({
+    randomNums: [],
+  });
+
   // access local chrome memory and save new number
   try {
     // get any previous data from storage
     const prevData = await chrome.storage.local.get({ randomNums: [] });
-    const workingNums = prevData.randomNums;
 
     // append new number into list
-    workingNums.push(ranNum);
+    randomNums.push(ranNum);
 
     // save to local memory
-    await chrome.storage.local.set({ randomNums: workingNums });
+    await chrome.storage.local.set({ randomNums });
   } catch (error) {
     console.log("Failed to access and save in local memory");
     return {
@@ -88,6 +92,16 @@ async function genRandNumber() {
     ranNum,
     nHistory: randomNums,
   };
+}
+
+// for resetting the storage
+async function resetRandomNumbers() {
+  try {
+    await chrome.storage.local.set({ randomNums: [] });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 }
 //------------------------ ^ Storage test ^ --------------------------------------------------
 
@@ -104,6 +118,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     case "randomNumber":
       genRandNumber()
+        .then(sendResponse)
+        .catch((err) => sendResponse({ success: false, error: err.message }));
+      return true;
+
+    case "resetRandomNumbers":
+      resetRandomNumbers()
         .then(sendResponse)
         .catch((err) => sendResponse({ success: false, error: err.message }));
       return true;
