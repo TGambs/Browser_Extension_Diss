@@ -4,10 +4,12 @@
   "version": "1.0",
   "manifest_version": 3,
   "action": {
-    "default_popup": "src/hello.html",
+    "default_popup": "src/mainPop.html",
     "default_icon": "src/hello_extensions.png"
   },
   "background": {
-    "service_worker": "/build/dist/background.bundle.js"
-  }
+    "service_worker": "/build/dist/background.bundle.js",
+    "type": "module"
+  },
+  "permissions": ["storage"]
 }

@@ -22,13 +22,13 @@ async function getNewKeyPair() {
         Public Key Length: ${response.publicKeyLength} bytes<br>
         <small>Public Key (base64): ${response.publicKey.substring(
           0,
-          500
+          50,
         )}...</small><br>
 
         Secret Key Length: ${response.secretKeyLength} bytes<br><br>
         <small>Secret Key (base64): ${response.secretKey.substring(
           0,
-          500
+          50,
         )}...</small>
       `;
 
@@ -38,29 +38,66 @@ async function getNewKeyPair() {
 
     //if there is an error then print that instead
     else {
-      document.getElementById(
-        "keyGenOutput"
-      ).innerHTML = `<strong>Error:</strong> ${response.error}`;
+      document.getElementById("keyGenOutput").innerHTML =
+        `<strong>Error:</strong> ${response.error}`;
     }
   } catch (error) {
     console.error("Error:", error);
-    document.getElementById(
-      "keyGenOutput"
-    ).innerHTML = `<strong>Error:</strong> ${error.message}`;
+    document.getElementById("keyGenOutput").innerHTML =
+      `<strong>Error:</strong> ${error.message}`;
   }
 }
+
+// -------------------------------------------------------------------
+
+async function getRanNum() {
+  try {
+    // call the backside genKeys method
+    const response = await chrome.runtime.sendMessage({
+      action: "randomNumber",
+    });
+    console.log("Response from background:", response);
+
+    // if backside returns successfully then...
+    if (response.success) {
+      const output = `<p>Random Number: ${response.ranNum}</p>`;
+
+      // write the genKeys data to the output element
+      document.getElementById("ranNumOut").innerHTML = output;
+    }
+
+    //if there is an error then print that instead
+    else {
+      document.getElementById("ranNumOut").innerHTML =
+        `<strong>Error:</strong> ${response.error}`;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    document.getElementById("ranNumOut").innerHTML =
+      `<strong>Error:</strong> ${error.message}`;
+  }
+}
+
+// ____________________-------_________________________________-------__________________________________
 
 // Wait for DOM to load before attaching event listeners
 document.addEventListener("DOMContentLoaded", () => {
   // listeners etc go here - waiting to add until after the page has fully loaded
   const genKeysBtn = document.getElementById("genKeysBtn");
-
   // for key generation button
   if (genKeysBtn) {
     genKeysBtn.addEventListener("click", getNewKeyPair);
     console.log("Key generation button listener attached");
   } else {
     console.error("genKeysBtn not found in DOM");
+  }
+
+  const ranNumBtn = document.getElementById("ranNumBtn");
+  if (ranNumBtn) {
+    ranNumBtn.addEventListener("click", getRanNum);
+    console.log("random number button listener");
+  } else {
+    console.error("ranNumBttn not found");
   }
 });
 

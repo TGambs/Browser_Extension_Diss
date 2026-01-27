@@ -27,6 +27,7 @@ const KEM = new MlKem768();
 });
 */
 
+//------------------------ Gen Keys --------------------------------------------------
 // function to generate key pair
 async function genKeyPair() {
   try {
@@ -55,29 +56,39 @@ async function genKeyPair() {
   }
 }
 
+//------------------------ ^ Gen Keys ^ --------------------------------------------------
+
+//------------------------ Storage test --------------------------------------------------
+async function genRandNumber() {
+  return {
+    success: true,
+    ranNum: Math.floor(Math.random() * 100),
+  };
+}
+//------------------------ ^ Storage test ^ --------------------------------------------------
+
+// -------------------- Listeners --------------------
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log("Message received in background:", request);
 
-  if (request.action === "genKeys") {
-    // Call the async function and wait for result
-    // once result is given, send it to the frontside
-    genKeyPair()
-      .then((result) => {
-        sendResponse(result);
-      })
+  switch (request.action) {
+    case "genKeys":
+      genKeyPair()
+        .then(sendResponse)
+        .catch((err) => sendResponse({ success: false, error: err.message }));
+      return true;
 
-      // send any error to frontside
-      .catch((error) => {
-        sendResponse({
-          success: false,
-          error: error.message,
-        });
-      });
+    case "randomNumber":
+      genRandNumber()
+        .then(sendResponse)
+        .catch((err) => sendResponse({ success: false, error: err.message }));
+      return true;
 
-    return true; // Keep channel open for async
+    // to catch any other case or error
+    default:
+      sendResponse({ success: false, error: "Unknown action" });
+      return true;
   }
-
-  return true;
 });
 
 console.log("--- Background.js completed ---\n");
