@@ -60,9 +60,33 @@ async function genKeyPair() {
 
 //------------------------ Storage test --------------------------------------------------
 async function genRandNumber() {
+  // gen number
+  const ranNum = Math.floor(Math.random() * 100);
+
+  // access local chrome memory and save new number
+  try {
+    // get any previous data from storage
+    const prevData = await chrome.storage.local.get({ randomNums: [] });
+    const workingNums = prevData.randomNums;
+
+    // append new number into list
+    workingNums.push(ranNum);
+
+    // save to local memory
+    await chrome.storage.local.set({ randomNums: workingNums });
+  } catch (error) {
+    console.log("Failed to access and save in local memory");
+    return {
+      success: false,
+      ranNum: 0,
+      nhistory: [0, 0],
+    };
+  }
+
   return {
     success: true,
-    ranNum: Math.floor(Math.random() * 100),
+    ranNum,
+    nHistory: randomNums,
   };
 }
 //------------------------ ^ Storage test ^ --------------------------------------------------

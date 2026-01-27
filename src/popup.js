@@ -60,7 +60,12 @@ async function getRanNum() {
 
     // if backside returns successfully then...
     if (response.success) {
-      const output = `<p>Random Number: ${response.ranNum}</p>`;
+      let output = `<p>Random Number: ${response.ranNum}</p>`;
+
+      // if the stored numbers length isnt 0 then add the stored numbers to the output
+      if (response.history && response.history.length > 0) {
+        output += "<p>Stored numbers: " + response.history.join(", ") + "</p>";
+      }
 
       // write the genKeys data to the output element
       document.getElementById("ranNumOut").innerHTML = output;
