@@ -36,30 +36,48 @@
         display: flex;
         justify-content: space-evenly;
         align-items: center;
+        padding: 10px;
       }
-      #leftInCont {
+      #leftIn {
         background-color: red;
-        width: 250px;
+        width: 246px;
         height: 200px;
         margin: 5px;
         border-style: solid;
         border-width: 1px;
         border-radius: 7px;
       }
-      #rightOutCont {
+      #Lcont {
+        background-color: brown;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #rightOut {
         background-color: blue;
-        width: 250px;
+        width: 246px;
         height: 200px;
         margin: 5px;
         border-style: solid;
         border-width: 1px;
         border-radius: 7px;
       }
-      #inData {
-        margin: 5px;
+      #Rcont {
+        background-color: aqua;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
+      #inData,
       #outData {
-        margin: 5px;
+        resize: none;
+        background: rgba(255, 0, 0, 0.1);
+        border-width: 0px;
+        border-radius: 7px;
+      }
+      #inData::placeholder,
+      #outData::placeholder {
+        color: black;
       }
     </style>
   </head>
@@ -69,22 +87,28 @@
         <h1>Hello User</h1>
 
         <div id="inputContainer">
-          <div id="leftInCont">
-            <input
-              type="text"
-              id="inData"
-              placeholder="Input Text Here..."
-              maxlength="500"
-              size="30"
-            />
+          <div id="Lcont">
+            <p>Input Data</p>
+            <div id="leftIn">
+              <textarea
+                id="inData"
+                rows="13"
+                cols="31"
+                placeholder="Input Text Here..."
+              ></textarea>
+            </div>
           </div>
-          <div id="rightOutCont">
-            <input
-              type="text"
-              id="outData"
-              placeholder="Ouput Text Will Be Shown Here..."
-              maxlength="20000"
-            />
+
+          <div id="Rcont">
+            <p>Output Data</p>
+            <div id="rightOut">
+              <textarea
+                id="outData"
+                rows="13"
+                cols="31"
+                placeholder="Ouput Text Will Be Shown Here..."
+              ></textarea>
+            </div>
           </div>
         </div>
 
