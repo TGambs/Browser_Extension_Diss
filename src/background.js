@@ -84,7 +84,21 @@ async function genKeyPair() {
 //------------------------ ^ Gen Keys ^ --------------------------------------------------
 
 //------------------------ ENCRYPTION --------------------------------------------------
-async function encryptMssg(mssg) {
+
+// define AES function to make key
+async function findAESKey(secret) {
+  const aesKey = await crypto.subtle.importKey(
+    "raw", //formatted as raw bytes
+    secret, //key data to use
+    { name: "AES-GCM" }, // type of algorithm
+    false, // doesnt need to be exported
+    ["encrypt", "decrypt"], // key operations
+  );
+
+  return aesKey;
+}
+
+async function encryptMssg(mssg, pkR) {
   // needed for encryption:
   // - public key
   // - ct (sent to recipient)
@@ -93,23 +107,6 @@ async function encryptMssg(mssg) {
   // - now make aesKey using ssS
   // - need (initailiastion vector) IV  <- can be sent in plaintext
   // - need mssg to encrypt
-
-  // define AES function to make key
-  async function findAESKey(secret) {
-    const aesKey = await crypto.subtle.importKey(
-      "raw", //formatted as raw bytes
-      secret, //key data to use
-      { name: "AES-GCM" }, // type of algorithm
-      false, // doesnt need to be exported
-      ["encrypt", "decrypt"], // key operations
-    );
-
-    return aesKey;
-  }
-
-  // generate keys
-  const [pkR, skR] = await KEM.generateKeyPair();
-  const [pkS, skS] = await KEM.generateKeyPair();
 
   // sender generates ct + ssS
   // ct = ciphertext (not the message)
@@ -143,14 +140,51 @@ async function encryptMssg(mssg) {
   };
 }
 
+//------------------------ ^ ENCRYPTION ^ --------------------------------------------------
+
+//------------------------ DECRYPTION --------------------------------------------------
+async function decryptMssg(ct, enMssg, iv, skR) {
+  // get from message:
+  // - ct
+  // - encrypted message
+  // - iv
+
+  // got private key already - matching the public one that was used for encryption
+
+  // calulate the ssR (ssS == ssR) <- if done correctly
+  const ssR = await KEM.decap(ct, skR);
+
+  // calculate the AES key using ssR
+  const aesKey = await findAESKey(ssR);
+
+  //decrypt the message
+  const decry = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv },
+    aesKey,
+    enMssg,
+  );
+  console.log(decry);
+
+  // decode from utf8
+  const decoder = new TextDecoder();
+  const dMssg = decoder.decode(decry);
+  return dMssg;
+}
+
 // run this when background.js is loaded
 (async () => {
-  const message = "ThisHasALengthOf18";
-  const { ct, encMssg, iv } = await encryptMssg(message);
-  console.log(ct, encMssg, iv);
-})();
+  // generate keys
+  const [pkR, skR] = await KEM.generateKeyPair();
+  const [pkS, skS] = await KEM.generateKeyPair();
 
-//------------------------ ENCRYPTION --------------------------------------------------
+  const message = "ThisHasALengthOf18";
+  const { ct, encMssg, iv } = await encryptMssg(message, pkR);
+  console.log("--- Encrypted message:", ct, ...encMssg, iv);
+
+  const decMsg = await decryptMssg(ct, encMssg, iv, skR);
+  console.log("--- Decrypted message:", decMsg);
+})();
+//------------------------ ^ DECRYPTION ^ --------------------------------------------------
 
 //------------------------ Storage test --------------------------------------------------
 async function genRandNumber() {
