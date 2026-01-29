@@ -2,8 +2,27 @@
 // kyber is done here
 // recieve data using "chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {});"
 // use crypto.subtle for AES computations
+
+// -----------------------------------------------------
+// from the documentation:
+
+// import { MlKem768 } from "@dajiaji/mlkem";
+// Using npm:
+// import { MlKem768 } from "mlkem"; // or "crystals-kyber-js"  <-- Import line
+
+// const recipient = new MlKem768();                      <-- This is the recipient creating public and private key
+// const [pkR, skR] = await recipient.generateKeyPair();  <-- This is the recipient creating public and private key
+
+// const sender = new MlKem768();
+// const [ct, ssS] = await sender.encap(pkR);
+
+// const ssR = await recipient.decap(ct, skR);
+// ssS === ssR
+
+// -----------------------------------------------------
+
 import { MlKem768 } from "crystals-kyber-js";
-import { error } from "jquery";
+//import { error } from "jquery";
 
 console.log("\n--- Background.js loading ---");
 
@@ -39,6 +58,11 @@ async function genKeyPair() {
     const pkBase64 = btoa(String.fromCharCode(...publicKey));
     const skBase64 = btoa(String.fromCharCode(...secretKey));
 
+    // const [ct, ssS] = await KEM.encap(publicKey);
+    // console.log(pkBase64);
+    // console.log(btoa(String.fromCharCode(...ct)));
+    // console.log(btoa(String.fromCharCode(...ssS)));
+
     // return all data to frontside
     return {
       success: true,
@@ -58,6 +82,75 @@ async function genKeyPair() {
 }
 
 //------------------------ ^ Gen Keys ^ --------------------------------------------------
+
+//------------------------ ENCRYPTION --------------------------------------------------
+async function encryptMssg(mssg) {
+  // needed for encryption:
+  // - public key
+  // - ct (sent to recipient)
+  // - ssS (key for encryption / recipient calculates it using private key)
+
+  // - now make aesKey using ssS
+  // - need (initailiastion vector) IV  <- can be sent in plaintext
+  // - need mssg to encrypt
+
+  // define AES function to make key
+  async function findAESKey(secret) {
+    const aesKey = await crypto.subtle.importKey(
+      "raw", //formatted as raw bytes
+      secret, //key data to use
+      { name: "AES-GCM" }, // type of algorithm
+      false, // doesnt need to be exported
+      ["encrypt", "decrypt"], // key operations
+    );
+
+    return aesKey;
+  }
+
+  // generate keys
+  const [pkR, skR] = await KEM.generateKeyPair();
+  const [pkS, skS] = await KEM.generateKeyPair();
+
+  // sender generates ct + ssS
+  // ct = ciphertext (not the message)
+  // ssS = shared secret Sender
+  const [ct, ssS] = await KEM.encap(pkR);
+
+  // generate aes key
+  const aesKey = await findAESKey(ssS);
+
+  // generate new initialisation vector
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+
+  // make instance of textEncoder to translate the messg into utf8
+  const encoder = new TextEncoder();
+  const udata = encoder.encode(mssg);
+
+  //encrypt the data using aes and the iv
+  const eDataRaw = await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    aesKey,
+    udata,
+  );
+
+  // change the raw data into an array of ints
+  const eData = new Uint8Array(eDataRaw);
+
+  return {
+    ct,
+    encMssg: eData,
+    iv,
+  };
+}
+
+// run this when background.js is loaded
+(async () => {
+  const message = "ThisHasALengthOf18";
+  const { ct, encMssg, iv } = await encryptMssg(message);
+  console.log(ct, encMssg, iv);
+})();
+
+//------------------------ ENCRYPTION --------------------------------------------------
 
 //------------------------ Storage test --------------------------------------------------
 async function genRandNumber() {
