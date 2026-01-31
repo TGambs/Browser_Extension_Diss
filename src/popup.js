@@ -6,6 +6,11 @@
 // shouldnt do kyber here and processing should be minimal
 // use "chrome.runtime.sendMessage(...)" to send data/trigger background.js
 
+// ---------------------------
+// here function is defined to call a response from "background.js"
+// listeners are added to the buttons once "DOMContentLoaded"
+// output from functions are written into html and swapped with the current output
+
 console.log("\n--- popup.js loading ---\n");
 
 // Function to request new key pair
@@ -95,6 +100,26 @@ async function resetHistory() {
     } else {
       document.getElementById("ranNumOut").innerHTML =
         `<strong>Error:</strong> ${response.error}`;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function encryptFromButton() {
+  try {
+    const userData = document.getElementById("inData").value;
+
+    const response = await chrome.runtime.sendMessage({
+      action: "encryptMessage",
+      payload: userData,
+    });
+    console.log("Response from background:", response);
+
+    if (response.success) {
+      console.log("YES");
+    } else {
+      console.log("NO");
     }
   } catch (err) {
     console.error(err);
