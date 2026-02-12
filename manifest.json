@@ -11,5 +11,5 @@
     "service_worker": "/build/dist/background.bundle.js",
     "type": "module"
   },
-  "permissions": ["storage"]
+  "permissions": ["storage", "clipboardWrite"]
 }

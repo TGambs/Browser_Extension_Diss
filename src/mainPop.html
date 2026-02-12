@@ -80,6 +80,10 @@
       #outData::placeholder {
         color: black;
       }
+
+      #keyArea {
+        background-color: darksalmon;
+      }
     </style>
   </head>
   <body>
@@ -99,6 +103,9 @@
               ></textarea>
             </div>
             <button type="button" id="encBtn">Encrypt</button>
+            <button type="button" id="cpyClip" onclick="copyToClip()">
+              Copy Text
+            </button>
           </div>
 
           <div id="Rcont">
@@ -115,8 +122,26 @@
           </div>
         </div>
 
-        <button type="button" id="genKeysBtn">Generate Key</button>
-        <p id="keyGenOutput"></p>
+        <div id="keyAreaCont">
+          <button type="button" id="genKeysBtn">Generate Key</button>
+          <p id="keyGenOutput"></p>
+          <br />
+
+          <div id="keyArea">
+            <textarea
+              id="publicKey"
+              rows="1"
+              cols="10"
+              placeholder="PK"
+            ></textarea>
+            <textarea
+              id="privateKey"
+              rows="1"
+              cols="10"
+              placeholder="SK"
+            ></textarea>
+          </div>
+        </div>
 
         <!-- <button type="button" id="ranNumBtn">Random Num</button>
         <button type="button" id="resetNumsBtn">Reset history</button>
@@ -131,3 +156,16 @@
     <script type="module" src="../build/dist/popup.bundle.js"></script>
   </body>
 </html>
+
+<script>
+  function copyToClip() {
+    //select id to copy
+    var txtData = document.getElementById("outData");
+    var txt = txtData.value;
+
+    // write the txt tot the clipboard
+    navigator.clipboard.writeText(txt.value);
+
+    alert("Text copied");
+  }
+</script>
