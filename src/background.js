@@ -196,38 +196,53 @@ async function decryptMssg(ct, enMssg, iv, skR) {
 //------------------------ ^ DECRYPTION ^ --------------------------------------------------
 
 //------------------------ Storage test --------------------------------------------------
-async function genRandNumber() {
-  // gen number
-  const ranNum = Math.floor(Math.random() * 100);
+// async function genRandNumber() {
+//   // gen number
+//   const ranNum = Math.floor(Math.random() * 100);
+//   const { randomNums } = await chrome.storage.local.get({
+//     randomNums: [],
+//   });
+//   // access local chrome memory and save new number
+//   try {
+//     // get any previous data from storage
+//     const prevData = await chrome.storage.local.get({ randomNums: [] });
 
-  const { randomNums } = await chrome.storage.local.get({
-    randomNums: [],
-  });
+//     // append new number into list
+//     randomNums.push(ranNum);
 
-  // access local chrome memory and save new number
+//     // save to local memory
+//     await chrome.storage.local.set({ randomNums });
+//   } catch (error) {
+//     console.log("Failed to access and save in local memory");
+//     return {
+//       success: false,
+//       ranNum: 0,
+//       nhistory: [0, 0],
+//     };
+//   }
+//   return {
+//     success: true,
+//     ranNum,
+//     nHistory: randomNums,
+//   };
+// }
+
+// sending data to storage
+async function addStorageData(sData) {
+  // too add data on, must first get old data, modify array, then "set" new data
   try {
-    // get any previous data from storage
-    const prevData = await chrome.storage.local.get({ randomNums: [] });
-
-    // append new number into list
-    randomNums.push(ranNum);
-
-    // save to local memory
-    await chrome.storage.local.set({ randomNums });
+    await chrome.storage.set({ sData });
   } catch (error) {
-    console.log("Failed to access and save in local memory");
-    return {
-      success: false,
-      ranNum: 0,
-      nhistory: [0, 0],
-    };
+    console.log("Storage set data error:", error);
   }
+}
 
-  return {
-    success: true,
-    ranNum,
-    nHistory: randomNums,
-  };
+async function getStorageData() {
+  try {
+    await chrome.storage.local.get({ randomNums: [] });
+  } catch (error) {
+    console.log("Error getting stored data:", error);
+  }
 }
 
 // for resetting the storage

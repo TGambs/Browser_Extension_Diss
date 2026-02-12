@@ -136,10 +136,12 @@ async function encryptFromButton() {
 function swapPage(pgNum) {
   var mainP = document.getElementById("mainPgCont");
   var strgP = document.getElementById("storagePgCont");
+  var keyP = document.getElementById("keyPgCont");
   var faqP = document.getElementById("faqPgCont");
 
   mainP.style.display = "none";
   strgP.style.display = "none";
+  keyP.style.display = "none";
   faqP.style.display = "none";
 
   switch (pgNum) {
@@ -152,6 +154,10 @@ function swapPage(pgNum) {
       break;
 
     case 2:
+      keyP.style.display = "block";
+      break;
+
+    case 3:
       faqP.style.display = "block";
       break;
   }
@@ -228,12 +234,20 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("nav bttn 1 not found");
   }
 
-  const faqBtn = document.getElementById("faqBtn");
-  if (faqBtn) {
-    faqBtn.addEventListener("click", () => swapPage(2));
+  const keyBtn = document.getElementById("keyBtn");
+  if (keyBtn) {
+    keyBtn.addEventListener("click", () => swapPage(2));
     console.log("Nav bttn 2");
   } else {
     console.error("nav bttn 2 not found");
+  }
+
+  const faqBtn = document.getElementById("faqBtn");
+  if (faqBtn) {
+    faqBtn.addEventListener("click", () => swapPage(3));
+    console.log("Nav bttn 3");
+  } else {
+    console.error("nav bttn 3 not found");
   }
 });
 
