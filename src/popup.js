@@ -132,10 +132,49 @@ async function encryptFromButton() {
   }
 }
 
+// Shouldve been inline js but extensions arent allowed any
+function swapPage(pgNum) {
+  var mainP = document.getElementById("mainPgCont");
+  var strgP = document.getElementById("storagePgCont");
+  var faqP = document.getElementById("faqPgCont");
+
+  mainP.style.display = "none";
+  strgP.style.display = "none";
+  faqP.style.display = "none";
+
+  switch (pgNum) {
+    case 0:
+      mainP.style.display = "block";
+      break;
+
+    case 1:
+      strgP.style.display = "block";
+      break;
+
+    case 2:
+      faqP.style.display = "block";
+      break;
+  }
+}
+
+function copyToClip() {
+  //select id to copy
+  var txtData = document.getElementById("outData");
+  var txt = txtData.value;
+
+  // write the txt tot the clipboard
+  navigator.clipboard.writeText(txt);
+
+  alert("Text copied");
+}
+
 // ____________________-------_________________________________-------__________________________________
 
 // Wait for DOM to load before attaching event listeners
 document.addEventListener("DOMContentLoaded", () => {
+  //load only the main page first
+  swapPage(0);
+
   // listeners etc go here - waiting to add until after the page has fully loaded
   const genKeysBtn = document.getElementById("genKeysBtn");
   // for key generation button
@@ -146,21 +185,23 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("genKeysBtn not found in DOM");
   }
 
+  /*
   const ranNumBtn = document.getElementById("ranNumBtn");
   if (ranNumBtn) {
     ranNumBtn.addEventListener("click", getRanNum);
     console.log("random number button listener");
   } else {
     console.error("ranNumBttn not found");
-  }
+  }*/
 
+  /*
   const resetNumsBtn = document.getElementById("resetNumsBtn");
   if (resetNumsBtn) {
     resetNumsBtn.addEventListener("click", resetHistory);
     console.log("storage reset");
   } else {
     console.error("reset button not found");
-  }
+  }*/
 
   const encryptBtn = document.getElementById("encBtn");
   if (encryptBtn) {
@@ -168,6 +209,31 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Encrypt button");
   } else {
     console.error("encrypt button not found");
+  }
+
+  // for nav bar swapping
+  const mainBtn = document.getElementById("mainBtn");
+  if (mainBtn) {
+    mainBtn.addEventListener("click", () => swapPage(0));
+    console.log("Nav bttn 0");
+  } else {
+    console.error("nav bttn 0 not found");
+  }
+
+  const storBtn = document.getElementById("storBtn");
+  if (storBtn) {
+    storBtn.addEventListener("click", () => swapPage(1));
+    console.log("Nav bttn 1");
+  } else {
+    console.error("nav bttn 1 not found");
+  }
+
+  const faqBtn = document.getElementById("faqBtn");
+  if (faqBtn) {
+    faqBtn.addEventListener("click", () => swapPage(2));
+    console.log("Nav bttn 2");
+  } else {
+    console.error("nav bttn 2 not found");
   }
 });
 

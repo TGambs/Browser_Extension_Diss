@@ -11,7 +11,9 @@
         display: flex;
         background-color: blueviolet;
       }
-      #mainPgCont {
+      #mainPgCont,
+      #storagePgCont,
+      #faqPgCont {
         background-color: #c1bfbf;
         width: 600px;
         height: 500px;
@@ -86,7 +88,9 @@
         background-color: darksalmon;
       }
 
-      .navBttn {
+      #mainBtn,
+      #storBtn,
+      #faqBtn {
         background-color: #3f3f3f;
         color: #fff;
         margin-top: 10px;
@@ -177,57 +181,13 @@
       </div>
 
       <div id="navBarCont">
-        <button type="button" class="navBttn" onclick="swapPage(0)">
-          Main Page
-        </button>
-        <button type="button" class="navBttn" onclick="swapPage(1)">
-          Storage Page
-        </button>
-        <button type="button" class="navBttn" onclick="swapPage(2)">
-          FAQ Page
-        </button>
+        <button type="button" id="mainBtn">Main Page</button>
+        <button type="button" id="storBtn">Storage Page</button>
+        <button type="button" id="faqBtn">FAQ Page</button>
       </div>
     </div>
 
     <!-- External JS-->
     <script type="module" src="../build/dist/popup.bundle.js"></script>
-
-    <!-- -------------------------- INLINE JAVASCRIPT ------------------------------ -->
-    <script>
-      function swapPage(pgNum) {
-        var mainP = document.getElementById("mainPgCont");
-        var strgP = document.getElementById("storagePgCont");
-        var faqP = document.getElementById("faqPgCont");
-
-        mainP.style.display = "none";
-        strgP.style.display = "none";
-        faqP.style.display = "none";
-
-        switch (pgNum) {
-          case 0:
-            mainP.style.display = "block";
-            break;
-
-          case 1:
-            strgP.style.display = "block";
-            break;
-
-          case 2:
-            faqP.style.display = "block";
-            break;
-        }
-      }
-
-      function copyToClip() {
-        //select id to copy
-        var txtData = document.getElementById("outData");
-        var txt = txtData.value;
-
-        // write the txt tot the clipboard
-        navigator.clipboard.writeText(txt);
-
-        alert("Text copied");
-      }
-    </script>
   </body>
 </html>
