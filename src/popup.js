@@ -2,10 +2,6 @@
 // shouldnt do kyber here and processing should be minimal
 // use "chrome.runtime.sendMessage(...)" to send data/trigger background.js
 
-// Popup.js is used for front-end stuff
-// shouldnt do kyber here and processing should be minimal
-// use "chrome.runtime.sendMessage(...)" to send data/trigger background.js
-
 // ---------------------------
 // here function is defined to call a response from "background.js"
 // listeners are added to the buttons once "DOMContentLoaded"
@@ -88,6 +84,7 @@ async function getRanNum() {
   }
 }
 
+// for testing chrome.storage
 async function resetHistory() {
   try {
     const response = await chrome.runtime.sendMessage({
@@ -108,8 +105,10 @@ async function resetHistory() {
 
 async function encryptFromButton() {
   try {
+    // get the data given in the text box
     const userData = document.getElementById("inData").value;
 
+    // send the action to background with the data in the payload
     const response = await chrome.runtime.sendMessage({
       action: "encryptMessage",
       payload: userData,
@@ -118,6 +117,13 @@ async function encryptFromButton() {
 
     if (response.success) {
       console.log("YES");
+
+      // format the returned data and put it in the ouput text box
+      document.getElementById("outData").value = JSON.stringify(
+        response,
+        null,
+        2,
+      );
     } else {
       console.log("NO");
     }
@@ -154,6 +160,14 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("storage reset");
   } else {
     console.error("reset button not found");
+  }
+
+  const encryptBtn = document.getElementById("encBtn");
+  if (encryptBtn) {
+    encryptBtn.addEventListener("click", encryptFromButton);
+    console.log("Encrypt button");
+  } else {
+    console.error("encrypt button not found");
   }
 });
 

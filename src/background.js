@@ -47,6 +47,12 @@ const KEM = new MlKem768();
 });
 */
 
+// FOR TESTING
+// global key vars made when generate key button is pressed
+// then accessed by encrypt and decrypt
+let storedPK = null;
+let storedSK = null;
+
 //------------------------ Gen Keys --------------------------------------------------
 // function to generate key pair
 async function genKeyPair() {
@@ -57,6 +63,9 @@ async function genKeyPair() {
     // Convert to base64 for easy transmission
     const pkBase64 = btoa(String.fromCharCode(...publicKey));
     const skBase64 = btoa(String.fromCharCode(...secretKey));
+
+    storedPK = publicKey;
+    storedSK = secretKey;
 
     // const [ct, ssS] = await KEM.encap(publicKey);
     // console.log(pkBase64);
@@ -172,18 +181,18 @@ async function decryptMssg(ct, enMssg, iv, skR) {
 }
 
 // run this when background.js is loaded
-(async () => {
-  // generate keys
-  const [pkR, skR] = await KEM.generateKeyPair();
-  const [pkS, skS] = await KEM.generateKeyPair();
+// (async () => {
+//   // generate keys
+//   const [pkR, skR] = await KEM.generateKeyPair();
+//   const [pkS, skS] = await KEM.generateKeyPair();
 
-  const message = "ThisHasALengthOf18";
-  const { ct, encMssg, iv } = await encryptMssg(message, pkR);
-  console.log("--- Encrypted message:", ct, ...encMssg, iv);
+//   const message = "ThisHasALengthOf18";
+//   const { ct, encMssg, iv } = await encryptMssg(message, pkR);
+//   console.log("--- Encrypted message:", ct, ...encMssg, iv);
 
-  const decMsg = await decryptMssg(ct, encMssg, iv, skR);
-  console.log("--- Decrypted message:", decMsg);
-})();
+//   const decMsg = await decryptMssg(ct, encMssg, iv, skR);
+//   console.log("--- Decrypted message:", decMsg);
+// })();
 //------------------------ ^ DECRYPTION ^ --------------------------------------------------
 
 //------------------------ Storage test --------------------------------------------------
@@ -253,6 +262,28 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       resetRandomNumbers()
         .then(sendResponse)
         .catch((err) => sendResponse({ success: false, error: err.message }));
+      return true;
+
+    case "encryptMessage":
+      //check if a key has been generated
+      if (!storedPK) {
+        sendResponse({ success: false, error: "No pk generated" });
+        return true;
+      }
+
+      // if there is a key then use the encryption func to get the correct data
+      encryptMssg(request.payload, storedPK)
+        // .then takes the output of the function and sends the response back to popup
+        .then(({ ct, encMssg, iv }) => {
+          sendResponse({
+            success: true,
+            ct: btoa(String.fromCharCode(...ct)), // formatted from binary into ascii
+            iv: btoa(String.fromCharCode(...iv)), // formatted from binary into ascii
+            encMssg: btoa(String.fromCharCode(...encMssg)), // formatted from binary into ascii
+          });
+        })
+        .catch((err) => sendResponse({ success: false, error: err.message }));
+
       return true;
 
     // to catch any other case or error
