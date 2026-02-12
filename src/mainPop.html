@@ -11,7 +11,7 @@
         display: flex;
         background-color: blueviolet;
       }
-      #dataCont {
+      #mainPgCont {
         background-color: #c1bfbf;
         width: 600px;
         height: 500px;
@@ -22,6 +22,7 @@
         width: 100px;
         height: 500px;
         margin: 5px;
+        display: block;
       }
       #keyGenOutput {
         width: 300px;
@@ -84,11 +85,31 @@
       #keyArea {
         background-color: darksalmon;
       }
+
+      .navBttn {
+        background-color: #3f3f3f;
+        color: #fff;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding: 5px;
+        text-align: center;
+        width: 100px;
+        height: 50px;
+        border: none;
+      }
+      .navBttn:hover {
+        opacity: 0.75;
+      }
+
+      .navBttn:focus {
+        background-color: grey;
+      }
     </style>
   </head>
+
   <body>
     <div id="allCont">
-      <div id="dataCont">
+      <div id="mainPgCont">
         <!-- <h1>Hello User</h1> -->
 
         <div id="inputContainer">
@@ -125,7 +146,6 @@
         <div id="keyAreaCont">
           <button type="button" id="genKeysBtn">Generate Key</button>
           <p id="keyGenOutput"></p>
-          <br />
 
           <div id="keyArea">
             <textarea
@@ -148,24 +168,66 @@
         <p id="ranNumOut">Click for random num to be saved</p> -->
       </div>
 
+      <div id="storagePgCont">
+        <p>STORAGE PAGE</p>
+      </div>
+
+      <div id="faqPgCont">
+        <p>FAQ PAGE</p>
+      </div>
+
       <div id="navBarCont">
-        <p>This is nav bar</p>
+        <button type="button" class="navBttn" onclick="swapPage(0)">
+          Main Page
+        </button>
+        <button type="button" class="navBttn" onclick="swapPage(1)">
+          Storage Page
+        </button>
+        <button type="button" class="navBttn" onclick="swapPage(2)">
+          FAQ Page
+        </button>
       </div>
     </div>
 
+    <!-- External JS-->
     <script type="module" src="../build/dist/popup.bundle.js"></script>
+
+    <!-- -------------------------- INLINE JAVASCRIPT ------------------------------ -->
+    <script>
+      function swapPage(pgNum) {
+        var mainP = document.getElementById("mainPgCont");
+        var strgP = document.getElementById("storagePgCont");
+        var faqP = document.getElementById("faqPgCont");
+
+        mainP.style.display = "none";
+        strgP.style.display = "none";
+        faqP.style.display = "none";
+
+        switch (pgNum) {
+          case 0:
+            mainP.style.display = "block";
+            break;
+
+          case 1:
+            strgP.style.display = "block";
+            break;
+
+          case 2:
+            faqP.style.display = "block";
+            break;
+        }
+      }
+
+      function copyToClip() {
+        //select id to copy
+        var txtData = document.getElementById("outData");
+        var txt = txtData.value;
+
+        // write the txt tot the clipboard
+        navigator.clipboard.writeText(txt);
+
+        alert("Text copied");
+      }
+    </script>
   </body>
 </html>
-
-<script>
-  function copyToClip() {
-    //select id to copy
-    var txtData = document.getElementById("outData");
-    var txt = txtData.value;
-
-    // write the txt tot the clipboard
-    navigator.clipboard.writeText(txt.value);
-
-    alert("Text copied");
-  }
-</script>
