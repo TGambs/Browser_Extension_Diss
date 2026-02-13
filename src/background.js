@@ -228,10 +228,23 @@ async function decryptMssg(ct, enMssg, iv, skR) {
 // }
 
 // sending data to storage
-async function addStorageData(sData) {
+async function addStorageData(newPubKey, newPrivKey) {
   // too add data on, must first get old data, modify array, then "set" new data
   try {
-    await chrome.storage.set({ sData });
+    //fetch the already stored data
+    const { pubKeys, privKeys } = await chrome.storage.local.get({
+      pubKeys: [],
+      privKeys: [],
+    });
+
+    // append the new data
+    pubKeys.push(newPubKey);
+    privKeys.push(newPrivKey);
+
+    // save to storage
+    await chrome.storage.local.set({ pubKeys, privKeys });
+
+    console.log("New data saved to storage");
   } catch (error) {
     console.log("Storage set data error:", error);
   }
@@ -239,13 +252,44 @@ async function addStorageData(sData) {
 
 async function getStorageData() {
   try {
-    await chrome.storage.local.get({ randomNums: [] });
+    // fetch stored keys
+    const { pubKeys, privKeys } = await chrome.storage.local.get({
+      pubKey: [],
+      privKey: [],
+    });
+
+    console.log("Data fetched from storage");
+
+    // print the storage as a table
+    chrome.storage.local.get(null, (items) => {
+      console.table(items);
+    });
+
+    return { success: true, pubKeys, privKeys };
   } catch (error) {
     console.log("Error getting stored data:", error);
   }
 }
 
 // for resetting the storage
+async function clearStorage() {
+  try {
+    // can do this but only deletes set data
+    /*await chrome.storage.local.set({
+      pubKeys: [],
+      privKeys: [],
+    });*/
+
+    // this completely resets all the local storage
+    await chrome.storage.local.clear();
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+/*
 async function resetRandomNumbers() {
   try {
     await chrome.storage.local.set({ randomNums: [] });
@@ -253,7 +297,7 @@ async function resetRandomNumbers() {
   } catch (error) {
     return { success: false, error: error.message };
   }
-}
+}*/
 //------------------------ ^ Storage test ^ --------------------------------------------------
 
 // -------------------- Listeners --------------------
@@ -273,8 +317,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         .catch((err) => sendResponse({ success: false, error: err.message }));
       return true;
 
-    case "resetRandomNumbers":
-      resetRandomNumbers()
+    case "resetStorage":
+      clearStorage()
         .then(sendResponse)
         .catch((err) => sendResponse({ success: false, error: err.message }));
       return true;
@@ -300,6 +344,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         .catch((err) => sendResponse({ success: false, error: err.message }));
 
       return true;
+
+    case "getStorage":
+      getStorageData()
+        .then(sendResponse)
+        .catch((err) => sendResponse({ success: false, error: err.message }));
+      return true;
+
+    case "addStorage":
+      //get the payload data from message request
+      const { pk, sk } = request.payload;
+      addStorageData(pk, sk)
+        .then(sendResponse)
+        .catch((err) => sendResponse({ success: false, error: err.message }));
 
     // to catch any other case or error
     default:

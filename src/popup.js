@@ -16,6 +16,11 @@ async function getNewKeyPair() {
     const response = await chrome.runtime.sendMessage({ action: "genKeys" });
     console.log("Response from background:", response);
 
+    const response1 = await chrome.runtime.sendMessage({
+      action: "addStorage",
+      payload: { pk: response.publicKey, sk: response.secretKey },
+    });
+
     // if backside returns successfully then...
     if (response.success) {
       const output = `
@@ -35,6 +40,11 @@ async function getNewKeyPair() {
 
       // write the genKeys data to the output element
       document.getElementById("keyGenOutput").innerHTML = output;
+
+      const response2 = await chrome.runtime.sendMessage({
+        action: "getStorage",
+      });
+      console.log("Response from background:", response2);
     }
 
     //if there is an error then print that instead
@@ -88,14 +98,15 @@ async function getRanNum() {
 async function resetHistory() {
   try {
     const response = await chrome.runtime.sendMessage({
-      action: "resetRandomNumbers",
+      action: "resetStorage",
     });
     console.log("Response from background:", response);
 
     if (response.success) {
-      document.getElementById("ranNumOut").innerHTML = "<p>History reset.</p>";
+      document.getElementById("storageResetAlert").innerHTML =
+        "<p>History reset.</p>";
     } else {
-      document.getElementById("ranNumOut").innerHTML =
+      document.getElementById("storageResetAlert").innerHTML =
         `<strong>Error:</strong> ${response.error}`;
     }
   } catch (err) {
@@ -200,14 +211,13 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("ranNumBttn not found");
   }*/
 
-  /*
   const resetNumsBtn = document.getElementById("resetNumsBtn");
   if (resetNumsBtn) {
     resetNumsBtn.addEventListener("click", resetHistory);
     console.log("storage reset");
   } else {
     console.error("reset button not found");
-  }*/
+  }
 
   const encryptBtn = document.getElementById("encBtn");
   if (encryptBtn) {
