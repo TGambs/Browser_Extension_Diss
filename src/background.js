@@ -254,8 +254,8 @@ async function getStorageData() {
   try {
     // fetch stored keys
     const { pubKeys, privKeys } = await chrome.storage.local.get({
-      pubKey: [],
-      privKey: [],
+      pubKeys: [],
+      privKeys: [],
     });
 
     console.log("Data fetched from storage");
@@ -357,6 +357,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       addStorageData(pk, sk)
         .then(sendResponse)
         .catch((err) => sendResponse({ success: false, error: err.message }));
+      return true;
 
     // to catch any other case or error
     default:

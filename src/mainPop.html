@@ -162,26 +162,17 @@
       <div id="keyPgCont">
         <p>KEY GENERATION PAGE</p>
         <div id="keyAreaCont">
+          <div id="keyArea">
+            <table id="storageTable"></table>
+          </div>
+
           <button type="button" id="genKeysBtn">Generate Key</button>
           <p id="keyGenOutput"></p>
 
-          <div id="keyArea">
-            <textarea
-              id="publicKey"
-              rows="1"
-              cols="10"
-              placeholder="PK"
-            ></textarea>
-            <textarea
-              id="privateKey"
-              rows="1"
-              cols="10"
-              placeholder="SK"
-            ></textarea>
-          </div>
+          <button type="button" id="resetNumsBtn">Reset Storage</button>
+          <p>Warning! This permanently deletes all stored data</p>
+          <p id="storageResetAlert"></p>
         </div>
-        <button type="button" id="resetNumsBtn">Reset history</button>
-        <p id="storageResetAlert"></p>
       </div>
 
       <!-- -------------------- FAQ PAGE -------------------- -->

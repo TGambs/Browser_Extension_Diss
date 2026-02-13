@@ -23,28 +23,28 @@ async function getNewKeyPair() {
 
     // if backside returns successfully then...
     if (response.success) {
-      const output = `
+      //for original testing
+      /*const output = `
         <strong>Key Pair Generated!</strong><br><br>
-        Public Key Length: ${response.publicKeyLength} bytes<br>
         <small>Public Key (base64): ${response.publicKey.substring(
           0,
           50,
         )}...</small><br>
-
-        Secret Key Length: ${response.secretKeyLength} bytes<br><br>
         <small>Secret Key (base64): ${response.secretKey.substring(
           0,
           50,
         )}...</small>
       `;
-
       // write the genKeys data to the output element
-      document.getElementById("keyGenOutput").innerHTML = output;
+      document.getElementById("keyGenOutput").innerHTML = output;*/
 
       const response2 = await chrome.runtime.sendMessage({
         action: "getStorage",
       });
       console.log("Response from background:", response2);
+
+      //update table with new data
+      getStorageTable();
     }
 
     //if there is an error then print that instead
@@ -94,6 +94,48 @@ async function getRanNum() {
   }
 }
 
+async function getStorageTable() {
+  //get table data
+  const response = await chrome.runtime.sendMessage({
+    action: "getStorage",
+  });
+
+  if (response.success) {
+    const { pubKeys, privKeys } = response;
+
+    // get the table from html
+    let table = document.getElementById("storageTable");
+
+    // make sure it is empty before adding anything new
+    table.innerHTML = "";
+
+    // define the layout
+    table.innerHTML = `
+    <tr>
+    <th>#</th>
+    <th>Public Keys</th>
+    <th>Private Keys</th>
+    </tr>
+    `;
+
+    pubKeys.forEach((pk, i) => {
+      table.innerHTML += `
+      <tr>
+      <td>${i + 1}</td>
+      <td>${pk.slice(0, 40)}...</td>
+      <td>${privKeys[i].slice(0, 40)}...</td>
+      </tr>
+      `;
+    });
+
+    console.log("--------------");
+    console.log(pubKeys);
+    console.log(privKeys);
+  } else {
+    console.error("Error getting storageTable");
+  }
+}
+
 // for testing chrome.storage
 async function resetHistory() {
   try {
@@ -103,8 +145,11 @@ async function resetHistory() {
     console.log("Response from background:", response);
 
     if (response.success) {
-      document.getElementById("storageResetAlert").innerHTML =
-        "<p>History reset.</p>";
+      /*document.getElementById("storageResetAlert").innerHTML =
+        "<p>History reset.</p>";*/
+
+      //update table view with reset table
+      getStorageTable();
     } else {
       document.getElementById("storageResetAlert").innerHTML =
         `<strong>Error:</strong> ${response.error}`;
@@ -166,6 +211,7 @@ function swapPage(pgNum) {
 
     case 2:
       keyP.style.display = "block";
+      getStorageTable();
       break;
 
     case 3:
