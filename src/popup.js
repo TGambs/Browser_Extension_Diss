@@ -273,6 +273,19 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("encrypt button not found");
   }
 
+  const copyBtn = document.getElementById("cpyClip");
+  var txtData = document.getElementById("outData");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(txtData.value);
+        console.log("Written to clipboard");
+      } catch (error) {
+        console.log("Error copying to clipboard:", error);
+      }
+    });
+  }
+
   // for nav bar swapping
   const mainBtn = document.getElementById("mainBtn");
   if (mainBtn) {
