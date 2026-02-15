@@ -174,12 +174,15 @@ async function encryptFromButton() {
     if (response.success) {
       console.log("YES");
 
+      // break down the reply into each part
+      const { reply, ct, iv, encMssg } = response;
+
+      // format the output with only the data needed
+      const formatOutData =
+        `ct = ${ct} \n` + `iv = ${iv}  \n` + `mssg = ${encMssg} `;
+
       // format the returned data and put it in the ouput text box
-      document.getElementById("outData").value = JSON.stringify(
-        response,
-        null,
-        2,
-      );
+      document.getElementById("outData").value = formatOutData;
     } else {
       console.log("NO");
     }

@@ -73,16 +73,37 @@
         align-items: center;
       }
       #inData,
-      #outData {
+      #outData,
+      #enDeKeyInput {
         resize: none;
-        background: rgba(255, 0, 0, 0.1);
+        background: rgba(255, 179, 0, 0.311);
         border-width: 0px;
         border-radius: 7px;
         font-size: x-small;
       }
       #inData::placeholder,
-      #outData::placeholder {
+      #outData::placeholder,
+      #enDeKeyInput::placeholder {
         color: black;
+      }
+
+      #Bcont {
+        background-color: dodgerblue;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 10px;
+        padding: 10px;
+      }
+
+      #mainButtonArea {
+        background-color: hotpink;
+        display: flex;
+        width: 400px;
+        justify-content: space-evenly;
+
+        margin: 10px;
+        padding: 10px;
       }
 
       #keyArea {
@@ -106,9 +127,12 @@
       .navBttn:hover {
         opacity: 0.75;
       }
-
       .navBttn:focus {
         background-color: grey;
+      }
+
+      .encBtn {
+        display: block;
       }
     </style>
   </head>
@@ -126,11 +150,9 @@
                 id="inData"
                 rows="18"
                 cols="40"
-                placeholder="Input Text Here..."
+                placeholder="Input Data Here..."
               ></textarea>
             </div>
-            <button type="button" id="encBtn">Encrypt</button>
-            <button type="button" id="cpyClip">Copy Text</button>
           </div>
 
           <div id="Rcont">
@@ -143,6 +165,21 @@
                 placeholder="Ouput Text Will Be Shown Here..."
               ></textarea>
             </div>
+          </div>
+        </div>
+
+        <div id="Bcont">
+          <div id="bInputArea">
+            <textarea
+              id="enDeKeyInput"
+              rows="5"
+              cols="80"
+              placeholder="Paste Key To Be Used Here..."
+            ></textarea>
+          </div>
+          <div id="mainButtonArea">
+            <button type="button" id="encBtn">Encrypt</button>
+            <button type="button" id="cpyClip">Copy Output</button>
             <button type="button" id="decBtn">Decrypt</button>
           </div>
         </div>
@@ -154,6 +191,18 @@
       <!-- -------------------- KEY STORAGE PAGE -------------------- -->
       <div id="storagePgCont">
         <p>STORAGE PAGE</p>
+        <div id="tableCont">
+          <table id="pkTable"></table>
+        </div>
+        <div id="pkInCont">
+          <textarea
+            id="pkIn"
+            rows="15"
+            cols="60"
+            placeholder="Paste Public Keys Here..."
+          ></textarea>
+          <button type="button" id="pkInBtn">Save New Key</button>
+        </div>
       </div>
 
       <!-- -------------------- KEY GENERATION PAGE -------------------- -->
