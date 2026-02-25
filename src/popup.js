@@ -2,6 +2,8 @@
 // shouldnt do kyber here and processing should be minimal
 // use "chrome.runtime.sendMessage(...)" to send data/trigger background.js
 
+import { error } from "jquery";
+
 // ---------------------------
 // here function is defined to call a response from "background.js"
 // listeners are added to the buttons once "DOMContentLoaded"
@@ -136,6 +138,72 @@ async function getStorageTable() {
   }
 }
 
+async function getPubKeyTable() {
+  //get table data
+  const response = await chrome.runtime.sendMessage({
+    action: "getPKStorage",
+  });
+
+  if (response.success) {
+    const { keyRef, publicSKey } = response;
+
+    // get the table from html
+    let table = document.getElementById("pkTable");
+
+    // make sure it is empty before adding anything new
+    table.innerHTML = "";
+
+    // define the layout
+    table.innerHTML = `
+    <tr>
+    <th>#</th>
+    <th>Ref</th>
+    <th>Public Keys</th>
+    </tr>
+    `;
+
+    keyRef.forEach((ref, i) => {
+      table.innerHTML += `
+      <tr>
+      <td>${i + 1}</td>
+      <td>${ref}</td>
+      <td>${publicSKey[i].slice(0, 40)}...</td>
+      </tr>
+      `;
+    });
+
+    console.log("--------------");
+    console.log(keyRef);
+    console.log(savedPubKeys);
+  } else {
+    console.error("Error getting Key Table");
+  }
+}
+
+async function setPubKeyTable() {
+  try {
+    //get values from page
+    const inRef = document.getElementById("refIn").value;
+    const inPubKey = document.getElementById("pkIn").value;
+
+    //send request to background
+    const response = await chrome.runtime.sendMessage({
+      action: "addPKStorage",
+      payload: { ref: inRef, pubKey: inPubKey },
+    });
+    console.log("Response from background:", response);
+
+    if (response.success) {
+      //if return is successful, update table view with new data
+      getPubKeyTable();
+    } else {
+      console.log("Error - reply from adding to pkStorage table");
+    }
+  } catch (error) {
+    console.log("error in setPubKeyTable:", error);
+  }
+}
+
 // for testing chrome.storage
 async function resetHistory() {
   try {
@@ -210,6 +278,7 @@ function swapPage(pgNum) {
 
     case 1:
       strgP.style.display = "block";
+      getPubKeyTable();
       break;
 
     case 2:
@@ -223,6 +292,7 @@ function swapPage(pgNum) {
   }
 }
 
+/*
 function copyToClip() {
   //select id to copy
   var txtData = document.getElementById("outData");
@@ -232,6 +302,19 @@ function copyToClip() {
   navigator.clipboard.writeText(txt);
 
   alert("Text copied");
+}
+*/
+
+async function wipeAllData() {
+  try {
+    const response = await chrome.runtime.sendMessage({
+      action: "wipeAllData",
+    });
+    console.log("WIPED ALL DATA");
+    console.log("Response from background:", response);
+  } catch (error) {
+    console.log("Error wiping all stored data: ", error);
+  }
 }
 
 // ____________________-------_________________________________-------__________________________________
@@ -320,6 +403,22 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Nav bttn 3");
   } else {
     console.error("nav bttn 3 not found");
+  }
+
+  const wipeBtn = document.getElementById("dataWipeBtn");
+  if (wipeBtn) {
+    wipeBtn.addEventListener("click", wipeAllData);
+    console.log("Wipe btn");
+  } else {
+    console.log("Wipe bttn not found");
+  }
+
+  const refPubSetBtn = document.getElementById("pkInBtn");
+  if (refPubSetBtn) {
+    refPubSetBtn.addEventListener("click", setPubKeyTable);
+    console.log("refPub btn");
+  } else {
+    console.log("refPub btn not found");
   }
 });
 

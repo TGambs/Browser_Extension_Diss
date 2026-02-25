@@ -245,8 +245,11 @@ async function addStorageData(newPubKey, newPrivKey) {
     await chrome.storage.local.set({ pubKeys, privKeys });
 
     console.log("New data saved to storage");
+
+    return { success: true };
   } catch (error) {
     console.log("Storage set data error:", error);
+    return { success: false, error: error.message };
   }
 }
 
@@ -275,11 +278,98 @@ async function getStorageData() {
 async function clearStorage() {
   try {
     // can do this but only deletes set data
-    /*await chrome.storage.local.set({
+    await chrome.storage.local.set({
       pubKeys: [],
       privKeys: [],
-    });*/
+    });
 
+    /*
+    // this completely resets all the local storage
+    await chrome.storage.local.clear();
+    */
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+//----------------------------------------------------------------------------------
+
+// sending data to storage
+async function addKeySData(newKeyRef, newPublicSKey) {
+  // too add data on, must first get old data, modify array, then "set" new data
+  // keyRef
+  // publicSKey
+  try {
+    //fetch the already stored data
+    const { keyRef, publicSKey } = await chrome.storage.local.get({
+      keyRef: [],
+      publicSKey: [],
+    });
+
+    // append the new data
+    keyRef.push(newKeyRef);
+    publicSKey.push(newPublicSKey);
+
+    // save to storage
+    await chrome.storage.local.set({ keyRef, publicSKey });
+
+    console.log("New data saved to KEY storage");
+    return { success: true };
+  } catch (error) {
+    console.log("KEY Storage set data error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+async function getKeySData() {
+  try {
+    // fetch stored keys
+    const { keyRef, publicSKey } = await chrome.storage.local.get({
+      keyRef: [],
+      publicSKey: [],
+    });
+
+    console.log("Data fetched from storage");
+
+    // print the storage as a table
+    chrome.storage.local.get(null, (items) => {
+      console.table(items);
+    });
+
+    return { success: true, keyRef, publicSKey };
+  } catch (error) {
+    console.log("Error getting stored data:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// for resetting the storage
+async function clearKeyS() {
+  try {
+    // can do this but only deletes set data
+    await chrome.storage.local.set({
+      keyRef: [],
+      publicSKey: [],
+    });
+
+    /*
+    // this completely resets all the local storage
+    await chrome.storage.local.clear();
+    */
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+//----------------------------------------------------------------------------------
+
+// for completely wiping all storage
+async function wipeAllStorageData() {
+  try {
     // this completely resets all the local storage
     await chrome.storage.local.clear();
 
@@ -311,14 +401,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         .catch((err) => sendResponse({ success: false, error: err.message }));
       return true;
 
+    /*
     case "randomNumber":
       genRandNumber()
         .then(sendResponse)
         .catch((err) => sendResponse({ success: false, error: err.message }));
       return true;
+    */
 
-    case "resetStorage":
-      clearStorage()
+    case "wipeAllData":
+      wipeAllStorageData()
         .then(sendResponse)
         .catch((err) => sendResponse({ success: false, error: err.message }));
       return true;
@@ -355,6 +447,35 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       //get the payload data from message request
       const { pk, sk } = request.payload;
       addStorageData(pk, sk)
+        .then(sendResponse)
+        .catch((err) => sendResponse({ success: false, error: err.message }));
+      return true;
+
+    case "resetStorage":
+      clearStorage()
+        .then(sendResponse)
+        .catch((err) => sendResponse({ success: false, error: err.message }));
+      return true;
+
+    // For Public Key Storage
+    case "getPKStorage":
+      getKeySData()
+        .then(sendResponse)
+        .catch((err) => sendResponse({ success: false, error: err.message }));
+      return true;
+
+    // For Public Key Storage
+    case "addPKStorage":
+      //get the payload data from message request
+      const { ref, pubKey } = request.payload;
+      addKeySData(ref, pubKey)
+        .then(sendResponse)
+        .catch((err) => sendResponse({ success: false, error: err.message }));
+      return true;
+
+    // For Public Key Storage
+    case "resetPKStorage":
+      clearKeyS()
         .then(sendResponse)
         .catch((err) => sendResponse({ success: false, error: err.message }));
       return true;
