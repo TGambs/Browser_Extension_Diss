@@ -26,28 +26,9 @@ import { MlKem768 } from "crystals-kyber-js";
 
 console.log("\n--- Background.js loading ---");
 
-//create instance
+//create global instance of MLKem
 const KEM = new MlKem768();
 
-//const recipient = new MlKem768();
-//console.log(recipient);
-
-// Test function
-/*chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log("Message received in background:", request);
-
-  if (request.action === "test") {
-    sendResponse({
-      success: true,
-      message: "Background is working!",
-    });
-  }
-
-  return true; // Keep channel open for async
-});
-*/
-
-// FOR TESTING
 // global key vars made when generate key button is pressed
 // then accessed by encrypt and decrypt
 let storedPK = null;
@@ -180,55 +161,10 @@ async function decryptMssg(ct, enMssg, iv, skR) {
   return dMssg;
 }
 
-// run this when background.js is loaded
-// (async () => {
-//   // generate keys
-//   const [pkR, skR] = await KEM.generateKeyPair();
-//   const [pkS, skS] = await KEM.generateKeyPair();
-
-//   const message = "ThisHasALengthOf18";
-//   const { ct, encMssg, iv } = await encryptMssg(message, pkR);
-//   console.log("--- Encrypted message:", ct, ...encMssg, iv);
-
-//   const decMsg = await decryptMssg(ct, encMssg, iv, skR);
-//   console.log("--- Decrypted message:", decMsg);
-// })();
 //------------------------ ^ DECRYPTION ^ --------------------------------------------------
 
-//------------------------ Storage test --------------------------------------------------
-// async function genRandNumber() {
-//   // gen number
-//   const ranNum = Math.floor(Math.random() * 100);
-//   const { randomNums } = await chrome.storage.local.get({
-//     randomNums: [],
-//   });
-//   // access local chrome memory and save new number
-//   try {
-//     // get any previous data from storage
-//     const prevData = await chrome.storage.local.get({ randomNums: [] });
-
-//     // append new number into list
-//     randomNums.push(ranNum);
-
-//     // save to local memory
-//     await chrome.storage.local.set({ randomNums });
-//   } catch (error) {
-//     console.log("Failed to access and save in local memory");
-//     return {
-//       success: false,
-//       ranNum: 0,
-//       nhistory: [0, 0],
-//     };
-//   }
-//   return {
-//     success: true,
-//     ranNum,
-//     nHistory: randomNums,
-//   };
-// }
-
 // sending data to storage
-async function addStorageData(newPubKey, newPrivKey) {
+async function addKGStorageData(newPubKey, newPrivKey) {
   // too add data on, must first get old data, modify array, then "set" new data
   try {
     //fetch the already stored data
@@ -253,7 +189,7 @@ async function addStorageData(newPubKey, newPrivKey) {
   }
 }
 
-async function getStorageData() {
+async function getKGStorageData() {
   try {
     // fetch stored keys
     const { pubKeys, privKeys } = await chrome.storage.local.get({
@@ -274,8 +210,23 @@ async function getStorageData() {
   }
 }
 
+async function setKGStorage(nPubKeys, nPrivKeys) {
+  try {
+    const { pubKeys, privKeys } = await chrome.storage.local.set({
+      pubKeys: nPubKeys,
+      privKeys: nPrivKeys,
+    });
+
+    console.log("KG storage set");
+
+    return { success: true };
+  } catch (error) {
+    console.log("Error updating KGStorage in set: ", error);
+  }
+}
+
 // for resetting the storage
-async function clearStorage() {
+async function clearKGStorage() {
   try {
     // can do this but only deletes set data
     await chrome.storage.local.set({
@@ -379,15 +330,6 @@ async function wipeAllStorageData() {
   }
 }
 
-/*
-async function resetRandomNumbers() {
-  try {
-    await chrome.storage.local.set({ randomNums: [] });
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
-}*/
 //------------------------ ^ Storage test ^ --------------------------------------------------
 
 // -------------------- Listeners --------------------
@@ -400,14 +342,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         .then(sendResponse)
         .catch((err) => sendResponse({ success: false, error: err.message }));
       return true;
-
-    /*
-    case "randomNumber":
-      genRandNumber()
-        .then(sendResponse)
-        .catch((err) => sendResponse({ success: false, error: err.message }));
-      return true;
-    */
 
     case "wipeAllData":
       wipeAllStorageData()
@@ -437,22 +371,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       return true;
 
-    case "getStorage":
-      getStorageData()
+    case "getKGStorage":
+      getKGStorageData()
         .then(sendResponse)
         .catch((err) => sendResponse({ success: false, error: err.message }));
       return true;
 
-    case "addStorage":
+    case "setKGStorage":
+      const { privKeys, pubKeys } = request.payload;
+      setKGStorage(pubKeys, privKeys)
+        .then(sendResponse)
+        .catch((err) => sendResponse({ success: false, error: err.message }));
+      return true;
+
+    case "addKGStorage":
       //get the payload data from message request
       const { pk, sk } = request.payload;
-      addStorageData(pk, sk)
+      addKGStorageData(pk, sk)
         .then(sendResponse)
         .catch((err) => sendResponse({ success: false, error: err.message }));
       return true;
 
-    case "resetStorage":
-      clearStorage()
+    case "resetKGStorage":
+      clearKGStorage()
         .then(sendResponse)
         .catch((err) => sendResponse({ success: false, error: err.message }));
       return true;

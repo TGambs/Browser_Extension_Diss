@@ -140,6 +140,15 @@
       .encBtn {
         display: block;
       }
+
+      .selected {
+        background-color: #98bffd;
+        cursor: pointer;
+      }
+      tr:hover {
+        opacity: 0.7;
+        cursor: pointer;
+      }
     </style>
   </head>
 
@@ -215,6 +224,7 @@
       <!-- -------------------- KEY GENERATION PAGE -------------------- -->
       <div id="keyPgCont">
         <p>KEY GENERATION PAGE</p>
+        <p>These are YOUR keys</p>
         <div id="keyAreaCont">
           <div id="keyArea">
             <table id="storageTable"></table>
@@ -224,8 +234,13 @@
           <p id="keyGenOutput"></p>
 
           <button type="button" id="resetNumsBtn">Reset Storage</button>
-          <p>Warning! This permanently deletes all stored data</p>
+          <p>Warning! This permanently deletes these saved keys</p>
           <p id="storageResetAlert"></p>
+
+          <button type="button" id="copyPubKGBtn">Copy Public Key</button>
+          <button type="button" id="copyPrivKGBtn">Copy Private Key</button>
+
+          <button type="button" id="deleteKGBtn">Delete Key Pair</button>
         </div>
       </div>
 

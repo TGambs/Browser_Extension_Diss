@@ -2,230 +2,15 @@
 // shouldnt do kyber here and processing should be minimal
 // use "chrome.runtime.sendMessage(...)" to send data/trigger background.js
 
-import { error } from "jquery";
-
 // ---------------------------
+
 // here function is defined to call a response from "background.js"
 // listeners are added to the buttons once "DOMContentLoaded"
 // output from functions are written into html and swapped with the current output
 
 console.log("\n--- popup.js loading ---\n");
 
-// Function to request new key pair
-async function getNewKeyPair() {
-  try {
-    // call the backside genKeys method
-    const response = await chrome.runtime.sendMessage({ action: "genKeys" });
-    console.log("Response from background:", response);
-
-    const response1 = await chrome.runtime.sendMessage({
-      action: "addStorage",
-      payload: { pk: response.publicKey, sk: response.secretKey },
-    });
-
-    // if backside returns successfully then...
-    if (response.success) {
-      //for original testing
-      /*const output = `
-        <strong>Key Pair Generated!</strong><br><br>
-        <small>Public Key (base64): ${response.publicKey.substring(
-          0,
-          50,
-        )}...</small><br>
-        <small>Secret Key (base64): ${response.secretKey.substring(
-          0,
-          50,
-        )}...</small>
-      `;
-      // write the genKeys data to the output element
-      document.getElementById("keyGenOutput").innerHTML = output;*/
-
-      const response2 = await chrome.runtime.sendMessage({
-        action: "getStorage",
-      });
-      console.log("Response from background:", response2);
-
-      //update table with new data
-      getStorageTable();
-    }
-
-    //if there is an error then print that instead
-    else {
-      document.getElementById("keyGenOutput").innerHTML =
-        `<strong>Error:</strong> ${response.error}`;
-    }
-  } catch (error) {
-    console.error("Error:", error);
-    document.getElementById("keyGenOutput").innerHTML =
-      `<strong>Error:</strong> ${error.message}`;
-  }
-}
-
-// -------------------------------------------------------------------
-
-async function getRanNum() {
-  try {
-    // call the backside genKeys method
-    const response = await chrome.runtime.sendMessage({
-      action: "randomNumber",
-    });
-    console.log("Response from background:", response);
-
-    // if backside returns successfully then...
-    if (response.success) {
-      let output = `<p>Random Number: ${response.ranNum}</p>`;
-
-      // if the stored numbers length isnt 0 then add the stored numbers to the output
-      if (response.nHistory && response.nHistory.length > 0) {
-        output += "<p>Stored numbers: " + response.nHistory.join(", ") + "</p>";
-      }
-
-      // write the genKeys data to the output element
-      document.getElementById("ranNumOut").innerHTML = output;
-    }
-
-    //if there is an error then print that instead
-    else {
-      document.getElementById("ranNumOut").innerHTML =
-        `<strong>Error:</strong> ${response.error}`;
-    }
-  } catch (error) {
-    console.error("Error:", error);
-    document.getElementById("ranNumOut").innerHTML =
-      `<strong>Error:</strong> ${error.message}`;
-  }
-}
-
-async function getStorageTable() {
-  //get table data
-  const response = await chrome.runtime.sendMessage({
-    action: "getStorage",
-  });
-
-  if (response.success) {
-    const { pubKeys, privKeys } = response;
-
-    // get the table from html
-    let table = document.getElementById("storageTable");
-
-    // make sure it is empty before adding anything new
-    table.innerHTML = "";
-
-    // define the layout
-    table.innerHTML = `
-    <tr>
-    <th>#</th>
-    <th>Public Keys</th>
-    <th>Private Keys</th>
-    </tr>
-    `;
-
-    pubKeys.forEach((pk, i) => {
-      table.innerHTML += `
-      <tr>
-      <td>${i + 1}</td>
-      <td>${pk.slice(0, 40)}...</td>
-      <td>${privKeys[i].slice(0, 40)}...</td>
-      </tr>
-      `;
-    });
-
-    console.log("--------------");
-    console.log(pubKeys);
-    console.log(privKeys);
-  } else {
-    console.error("Error getting storageTable");
-  }
-}
-
-async function getPubKeyTable() {
-  //get table data
-  const response = await chrome.runtime.sendMessage({
-    action: "getPKStorage",
-  });
-
-  if (response.success) {
-    const { keyRef, publicSKey } = response;
-
-    // get the table from html
-    let table = document.getElementById("pkTable");
-
-    // make sure it is empty before adding anything new
-    table.innerHTML = "";
-
-    // define the layout
-    table.innerHTML = `
-    <tr>
-    <th>#</th>
-    <th>Ref</th>
-    <th>Public Keys</th>
-    </tr>
-    `;
-
-    keyRef.forEach((ref, i) => {
-      table.innerHTML += `
-      <tr>
-      <td>${i + 1}</td>
-      <td>${ref}</td>
-      <td>${publicSKey[i].slice(0, 40)}...</td>
-      </tr>
-      `;
-    });
-
-    console.log("--------------");
-    console.log(keyRef);
-    console.log(savedPubKeys);
-  } else {
-    console.error("Error getting Key Table");
-  }
-}
-
-async function setPubKeyTable() {
-  try {
-    //get values from page
-    const inRef = document.getElementById("refIn").value;
-    const inPubKey = document.getElementById("pkIn").value;
-
-    //send request to background
-    const response = await chrome.runtime.sendMessage({
-      action: "addPKStorage",
-      payload: { ref: inRef, pubKey: inPubKey },
-    });
-    console.log("Response from background:", response);
-
-    if (response.success) {
-      //if return is successful, update table view with new data
-      getPubKeyTable();
-    } else {
-      console.log("Error - reply from adding to pkStorage table");
-    }
-  } catch (error) {
-    console.log("error in setPubKeyTable:", error);
-  }
-}
-
-// for testing chrome.storage
-async function resetHistory() {
-  try {
-    const response = await chrome.runtime.sendMessage({
-      action: "resetStorage",
-    });
-    console.log("Response from background:", response);
-
-    if (response.success) {
-      /*document.getElementById("storageResetAlert").innerHTML =
-        "<p>History reset.</p>";*/
-
-      //update table view with reset table
-      getStorageTable();
-    } else {
-      document.getElementById("storageResetAlert").innerHTML =
-        `<strong>Error:</strong> ${response.error}`;
-    }
-  } catch (err) {
-    console.error(err);
-  }
-}
+//------------------------------- MAIN PAGE ------------------------------------------------------
 
 async function encryptFromButton() {
   try {
@@ -283,7 +68,7 @@ function swapPage(pgNum) {
 
     case 2:
       keyP.style.display = "block";
-      getStorageTable();
+      getKGStorageTable();
       break;
 
     case 3:
@@ -292,18 +77,270 @@ function swapPage(pgNum) {
   }
 }
 
-/*
-function copyToClip() {
-  //select id to copy
-  var txtData = document.getElementById("outData");
-  var txt = txtData.value;
+//--------------------------------------------------------------------------------------------------
 
-  // write the txt tot the clipboard
-  navigator.clipboard.writeText(txt);
+//------------------------------- KEY GEN PAGE ------------------------------------------------------
 
-  alert("Text copied");
+// Function to request new key pair
+async function getNewKeyPair() {
+  try {
+    // call the backside genKeys method
+    const response = await chrome.runtime.sendMessage({ action: "genKeys" });
+    console.log("Response from background:", response);
+
+    const response1 = await chrome.runtime.sendMessage({
+      action: "addKGStorage",
+      payload: { pk: response.publicKey, sk: response.secretKey },
+    });
+
+    // if backside returns successfully then...
+    if (response.success) {
+      const response2 = await chrome.runtime.sendMessage({
+        action: "getKGStorage",
+      });
+      console.log("Response from background:", response2);
+
+      //update table with new data
+      getKGStorageTable();
+    }
+
+    //if there is an error then print that instead
+    else {
+      document.getElementById("keyGenOutput").innerHTML =
+        `<strong>Error:</strong> ${response.error}`;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    document.getElementById("keyGenOutput").innerHTML =
+      `<strong>Error:</strong> ${error.message}`;
+  }
 }
-*/
+
+// Gets the stored data and updates the table
+let selKeyIndex = null;
+async function getKGStorageTable() {
+  //get table data
+  const response = await chrome.runtime.sendMessage({
+    action: "getKGStorage",
+  });
+
+  if (response.success) {
+    const { pubKeys, privKeys } = response;
+
+    // get the table from html
+    let table = document.getElementById("storageTable");
+    // make sure it is empty before adding anything new
+    table.innerHTML = "";
+
+    // define the header layout as an element
+    const headerRow = document.createElement("tr");
+    headerRow.innerHTML = `
+    <th>#</th>
+    <th>Public Keys</th>
+    <th>Private Keys</th>
+    `;
+
+    // add the header to the table
+    table.appendChild(headerRow);
+
+    // reset the selected index when the table is reloaded
+    selKeyIndex = null;
+
+    pubKeys.forEach((pk, i) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+      <td>${i}</td>
+      <td>${pk.slice(0, 40)}...</td>
+      <td>${privKeys[i].slice(0, 40)}...</td>
+      `;
+
+      // then for each row add a listener to see if it has been selected
+      row.addEventListener("click", () => {
+        // unselect all rows
+        table
+          .querySelectorAll("tr")
+          .forEach((rw) => rw.classList.remove("selected"));
+
+        // add selected class to what row was clicked
+        row.classList.add("selected");
+
+        //save the index of what was selected
+        selKeyIndex = i;
+        console.log("Row ", selKeyIndex, "has been selected");
+      });
+
+      table.appendChild(row);
+    });
+
+    console.log("--------------");
+    console.log(pubKeys);
+    console.log(privKeys);
+  } else {
+    console.error("Error getting storageTable");
+  }
+}
+
+// fo copying either key from the selected row
+async function copyKGKey(isPublic) {
+  //check if a row is selected
+  if (selKeyIndex == null) {
+    console.log("No row selected");
+    return;
+  }
+
+  try {
+    const response = await chrome.runtime.sendMessage({
+      action: "getKGStorage",
+    });
+
+    if (response.success) {
+      const { privKeys, pubKeys } = response;
+
+      // if isPublic is true then use pubK array, if false use privK array
+      const keyToCopy = isPublic ? pubKeys[selKeyIndex] : privKeys[selKeyIndex];
+
+      // write to clipboard
+      await navigator.clipboard.writeText(keyToCopy);
+      console.log("Key copied to clipboard");
+    } else {
+      console.log("Error getting KG storage for copying");
+    }
+  } catch (error) {
+    console.error("Error copying KG key: ", error);
+  }
+}
+
+async function delKGKey() {
+  //check if a row is selected
+  if (selKeyIndex == null) {
+    console.log("No row selected");
+    return;
+  }
+
+  try {
+    const response = await chrome.runtime.sendMessage({
+      action: "getKGStorage",
+    });
+
+    if (response.success) {
+      const { privKeys, pubKeys } = response;
+
+      // delete the selected row from the array
+      privKeys.splice(selKeyIndex, 1);
+      pubKeys.splice(selKeyIndex, 1);
+
+      // send the updated arrays back to storage
+      await chrome.runtime.sendMessage({
+        action: "setKGStorage",
+        payload: { privKeys, pubKeys },
+      });
+
+      // update the visable table
+      getKGStorageTable();
+
+      console.log("Row number", selKeyIndex, " deleted");
+    } else {
+      console.log("Error getting KG keys to delete");
+    }
+  } catch (error) {
+    console.log("Error deleting KG key row: ", error);
+  }
+}
+
+// for testing chrome.storage
+async function resetKGStorage() {
+  try {
+    const response = await chrome.runtime.sendMessage({
+      action: "resetKGStorage",
+    });
+    console.log("Response from background:", response);
+
+    if (response.success) {
+      /*document.getElementById("storageResetAlert").innerHTML =
+        "<p>History reset.</p>";*/
+
+      //update table view with reset table
+      getKGStorageTable();
+    } else {
+      document.getElementById("storageResetAlert").innerHTML =
+        `<strong>Error:</strong> ${response.error}`;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+//------------------------------- KEY STORAGE PAGE ------------------------------------------------------
+
+// get data from storage and format it into the table
+async function getPubKeyTable() {
+  //get table data
+  const response = await chrome.runtime.sendMessage({
+    action: "getPKStorage",
+  });
+
+  if (response.success) {
+    const { keyRef, publicSKey } = response;
+
+    // get the table from html
+    let table = document.getElementById("pkTable");
+
+    // make sure it is empty before adding anything new
+    table.innerHTML = "";
+
+    // define the layout
+    table.innerHTML = `
+    <tr>
+    <th>#</th>
+    <th>Ref</th>
+    <th>Public Keys</th>
+    </tr>
+    `;
+
+    keyRef.forEach((ref, i) => {
+      table.innerHTML += `
+      <tr>
+      <td>${i + 1}</td>
+      <td>${ref}</td>
+      <td>${publicSKey[i].slice(0, 40)}...</td>
+      </tr>
+      `;
+    });
+
+    console.log("--------------");
+    console.log(keyRef);
+    console.log(savedPubKeys);
+  } else {
+    console.error("Error getting Key Table");
+  }
+}
+
+// adds new ref and key to local storage
+async function setPubKeyTable() {
+  try {
+    //get values from page
+    const inRef = document.getElementById("refIn").value;
+    const inPubKey = document.getElementById("pkIn").value;
+
+    //send request to background
+    const response = await chrome.runtime.sendMessage({
+      action: "addPKStorage",
+      payload: { ref: inRef, pubKey: inPubKey },
+    });
+    console.log("Response from background:", response);
+
+    if (response.success) {
+      //if return is successful, update table view with new data
+      getPubKeyTable();
+    } else {
+      console.log("Error - reply from adding to pkStorage table");
+    }
+  } catch (error) {
+    console.log("error in setPubKeyTable:", error);
+  }
+}
 
 async function wipeAllData() {
   try {
@@ -334,21 +371,36 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("genKeysBtn not found in DOM");
   }
 
-  /*
-  const ranNumBtn = document.getElementById("ranNumBtn");
-  if (ranNumBtn) {
-    ranNumBtn.addEventListener("click", getRanNum);
-    console.log("random number button listener");
-  } else {
-    console.error("ranNumBttn not found");
-  }*/
-
   const resetNumsBtn = document.getElementById("resetNumsBtn");
   if (resetNumsBtn) {
-    resetNumsBtn.addEventListener("click", resetHistory);
+    resetNumsBtn.addEventListener("click", resetKGStorage);
     console.log("storage reset");
   } else {
     console.error("reset button not found");
+  }
+
+  const copyPubKGBtn = document.getElementById("copyPubKGBtn");
+  if (copyPubKGBtn) {
+    copyPubKGBtn.addEventListener("click", () => copyKGKey(true));
+    console.log("copy KG pub btn");
+  } else {
+    console.log("copyKGpub button not found");
+  }
+
+  const copyPrivKGBtn = document.getElementById("copyPrivKGBtn");
+  if (copyPrivKGBtn) {
+    copyPrivKGBtn.addEventListener("click", () => copyKGKey(false));
+    console.log("copy KG priv btn");
+  } else {
+    console.log("copyKGpriv button not found");
+  }
+
+  const delKGRowBtn = document.getElementById("deleteKGBtn");
+  if (delKGRowBtn) {
+    delKGRowBtn.addEventListener("click", delKGKey);
+    console.log("delKGRow btn");
+  } else {
+    console.log("delKGRow btn not found");
   }
 
   const encryptBtn = document.getElementById("encBtn");
@@ -372,7 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // for nav bar swapping
+  // ------------ for nav bar swapping ---------------------
   const mainBtn = document.getElementById("mainBtn");
   if (mainBtn) {
     mainBtn.addEventListener("click", () => swapPage(0));
@@ -404,6 +456,7 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     console.error("nav bttn 3 not found");
   }
+  //----------------------------------------------------------
 
   const wipeBtn = document.getElementById("dataWipeBtn");
   if (wipeBtn) {
