@@ -31,8 +31,8 @@ const KEM = new MlKem768();
 
 // global key vars made when generate key button is pressed
 // then accessed by encrypt and decrypt
-let storedPK = null;
-let storedSK = null;
+//let storedPK = null;
+//let storedSK = null;
 
 //------------------------ Gen Keys --------------------------------------------------
 // function to generate key pair
@@ -45,8 +45,8 @@ async function genKeyPair() {
     const pkBase64 = btoa(String.fromCharCode(...publicKey));
     const skBase64 = btoa(String.fromCharCode(...secretKey));
 
-    storedPK = publicKey;
-    storedSK = secretKey;
+    //storedPK = publicKey;
+    //storedSK = secretKey;
 
     // const [ct, ssS] = await KEM.encap(publicKey);
     // console.log(pkBase64);
@@ -212,7 +212,7 @@ async function getKGStorageData() {
 
 async function setKGStorage(nPubKeys, nPrivKeys) {
   try {
-    const { pubKeys, privKeys } = await chrome.storage.local.set({
+    await chrome.storage.local.set({
       pubKeys: nPubKeys,
       privKeys: nPrivKeys,
     });
@@ -349,15 +349,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         .catch((err) => sendResponse({ success: false, error: err.message }));
       return true;
 
-    case "encryptMessage":
-      //check if a key has been generated
-      if (!storedPK) {
-        sendResponse({ success: false, error: "No pk generated" });
+    case "encryptMessage": {
+      //get the pk from the key input area and validate
+      let { userData, userPK } = request.payload;
+
+      if (userPK == null) {
+        console.log("PK for encryption is invalid");
+        sendResponse({ success: false, error: "PK given is invalid" });
         return true;
+      } else {
+        //change the pk back into uint8Array
+        const binaryPK = atob(userPK);
+        userPK = new Uint8Array(binaryPK.length);
+        for (let i = 0; i < binaryPK.length; i++) {
+          userPK[i] = binaryPK.charCodeAt(i);
+        }
       }
 
       // if there is a key then use the encryption func to get the correct data
-      encryptMssg(request.payload, storedPK)
+      encryptMssg(userData, userPK)
         // .then takes the output of the function and sends the response back to popup
         .then(({ ct, encMssg, iv }) => {
           sendResponse({
@@ -368,8 +378,51 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           });
         })
         .catch((err) => sendResponse({ success: false, error: err.message }));
-
       return true;
+    }
+
+    //decrypt message - encMssg has already been formatted
+    case "decryptMssg": {
+      let { ct, iv, encMssg, privKey } = request.payload;
+
+      //change the sk back into uint8Array
+      privKey = atob(privKey);
+      let privKeyArr = new Uint8Array(privKey.length);
+      for (let i = 0; i < privKey.length; i++) {
+        privKeyArr[i] = privKey.charCodeAt(i);
+      }
+
+      //change ct back
+      ct = atob(ct);
+      let ctArr = new Uint8Array(ct.length);
+      for (let i = 0; i < ct.length; i++) {
+        ctArr[i] = ct.charCodeAt(i);
+      }
+
+      //change encMssg back
+      encMssg = atob(encMssg);
+      let encMssgArr = new Uint8Array(encMssg.length);
+      for (let i = 0; i < encMssg.length; i++) {
+        encMssgArr[i] = encMssg.charCodeAt(i);
+      }
+
+      // change iv back
+      iv = atob(iv);
+      let ivArr = new Uint8Array(iv.length);
+      for (let i = 0; i < iv.length; i++) {
+        ivArr[i] = iv.charCodeAt(i);
+      }
+
+      decryptMssg(ctArr, encMssgArr, ivArr, privKeyArr)
+        .then((decMssg) => {
+          sendResponse({
+            success: true,
+            decMssg,
+          });
+        })
+        .catch((err) => sendResponse({ success: false, error: err.message }));
+      return true;
+    }
 
     case "getKGStorage":
       getKGStorageData()

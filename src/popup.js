@@ -16,11 +16,12 @@ async function encryptFromButton() {
   try {
     // get the data given in the text box
     const userData = document.getElementById("inData").value;
+    const userPK = document.getElementById("enDeKeyInput").value;
 
     // send the action to background with the data in the payload
     const response = await chrome.runtime.sendMessage({
       action: "encryptMessage",
-      payload: userData,
+      payload: { userData, userPK },
     });
     console.log("Response from background:", response);
 
@@ -31,8 +32,7 @@ async function encryptFromButton() {
       const { reply, ct, iv, encMssg } = response;
 
       // format the output with only the data needed
-      const formatOutData =
-        `ct = ${ct} \n` + `iv = ${iv}  \n` + `mssg = ${encMssg} `;
+      const formatOutData = `ct = ${ct}\niv = ${iv}\nmssg = ${encMssg}`;
 
       // format the returned data and put it in the ouput text box
       document.getElementById("outData").value = formatOutData;
@@ -41,6 +41,41 @@ async function encryptFromButton() {
     }
   } catch (err) {
     console.error(err);
+  }
+}
+
+async function decryptFromButton() {
+  try {
+    const rawData = document.getElementById("inData").value;
+    const privKey = document.getElementById("enDeKeyInput").value;
+
+    const ct = rawData.split("ct = ")[1].split("\n")[0].trim();
+    const iv = rawData.split("iv = ")[1].split("\n")[0].trim();
+    const encMssg = rawData.split("mssg = ")[1].trim();
+
+    console.log(
+      `Data input split into\n ct- ${ct}\niv- ${iv}\nmssg- ${encMssg}`,
+    );
+
+    if (privKey == null) {
+      console.log("SK for encryption is invalid");
+      return true;
+    }
+
+    const response = await chrome.runtime.sendMessage({
+      action: "decryptMssg",
+      payload: { ct, iv, encMssg, privKey },
+    });
+
+    if (response.success) {
+      console.log("dec YES");
+
+      const decMssg = response.decMssg;
+
+      document.getElementById("outData").value = decMssg;
+    }
+  } catch (error) {
+    console.log("Error decrypting: ", error);
   }
 }
 
@@ -87,6 +122,7 @@ async function getNewKeyPair() {
     // call the backside genKeys method
     const response = await chrome.runtime.sendMessage({ action: "genKeys" });
     console.log("Response from background:", response);
+    console.log("KEY PAIR MADE");
 
     const response1 = await chrome.runtime.sendMessage({
       action: "addKGStorage",
@@ -284,6 +320,10 @@ async function getPubKeyTable() {
   if (response.success) {
     const { keyRef, publicSKey } = response;
 
+    if (keyRef.length == 0) {
+      return true;
+    }
+
     // get the table from html
     let table = document.getElementById("pkTable");
 
@@ -302,16 +342,12 @@ async function getPubKeyTable() {
     keyRef.forEach((ref, i) => {
       table.innerHTML += `
       <tr>
-      <td>${i + 1}</td>
+      <td>${i}</td>
       <td>${ref}</td>
       <td>${publicSKey[i].slice(0, 40)}...</td>
       </tr>
       `;
     });
-
-    console.log("--------------");
-    console.log(keyRef);
-    console.log(savedPubKeys);
   } else {
     console.error("Error getting Key Table");
   }
@@ -409,6 +445,14 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Encrypt button");
   } else {
     console.error("encrypt button not found");
+  }
+
+  const decBtn = document.getElementById("decBtn");
+  if (decBtn) {
+    decBtn.addEventListener("click", decryptFromButton);
+    console.log("Decrypt btn");
+  } else {
+    console.log("decBtn not found");
   }
 
   const copyBtn = document.getElementById("cpyClip");
