@@ -15,12 +15,17 @@
       #storagePgCont,
       #keyPgCont,
       #faqPgCont {
-        background-color: #c1bfbf;
+        background-color: #3f3f3f;
         width: 600px;
         height: 500px;
         margin: 5px;
       }
       #keyPgCont {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      #storagePgCont {
         display: flex;
         flex-direction: column;
         overflow: hidden;
@@ -119,31 +124,39 @@
         padding: 10px;
       }
 
-      #keyAreaCont {
+      #keyAreaCont,
+      #pkTableCont {
         flex: 1;
         overflow-y: auto;
       }
-      #keyArea {
+      #keyArea,
+      #pkArea {
         display: flex;
         margin: 10px;
-        justify-content: center;
+        align-items: center;
+        flex-direction: column;
       }
-      #storageTable {
+
+      #storageTable,
+      #pkTable {
         background-color: #f1ccba;
         border-radius: 5px;
         table-layout: auto;
         width: 95%;
-        padding: 5px;
+        padding: 10px;
       }
-      #storageTable th {
+      #storageTable th,
+      #pkTable th {
         border-bottom: 2px solid #000;
       }
-      #storageTable td {
+      #storageTable td,
+      #pkTable td {
         /*border-right: 1px solid #000;*/
         border-bottom: 0.3px dashed #000;
       }
-      #KGbuttonArea {
-        background-color: rgba(27, 27, 27, 0.7);
+      #KGbuttonArea,
+      #pkInCont {
+        background-color: #c1bfbf;
         display: block;
         padding: 10px;
         margin: 10px;
@@ -151,7 +164,17 @@
         bottom: 0;
         border-radius: 10px;
       }
-      #KGBr1 {
+      #pkTxtIn {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-bottom: 10px;
+      }
+      #pkIn {
+        resize: none;
+      }
+      #KGBr1,
+      #PKSr1 {
         /*background-color: chartreuse;*/
         display: flex;
         justify-content: space-evenly;
@@ -168,7 +191,10 @@
       #deleteKGBtn,
       #copyPrivKGBtn,
       #genKeysBtn,
-      #resetNumsBtn {
+      #resetNumsBtn,
+      #pkInBtn,
+      #pkDelBtn,
+      #pkCopyBtn {
         color: white;
         border-radius: 4px;
         text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
@@ -178,14 +204,17 @@
         cursor: pointer;
       }
       #copyPubKGBtn,
-      #copyPrivKGBtn {
+      #copyPrivKGBtn,
+      #pkInBtn {
         background-color: rgb(30, 182, 65);
       }
       #deleteKGBtn,
-      #resetNumsBtn {
+      #resetNumsBtn,
+      #pkDelBtn {
         background-color: rgb(193, 60, 60);
       }
-      #genKeysBtn {
+      #genKeysBtn,
+      #pkCopyBtn {
         background-color: rgb(65, 185, 221);
       }
 
@@ -223,6 +252,9 @@
       tr:hover {
         opacity: 0.7;
         cursor: pointer;
+      }
+      p {
+        color: #fff;
       }
     </style>
   </head>
@@ -281,18 +313,30 @@
       <!-- -------------------- KEY STORAGE PAGE -------------------- -->
       <div id="storagePgCont">
         <p>STORAGE PAGE</p>
-        <div id="tableCont">
-          <table id="pkTable"></table>
+        <div id="pkTableCont">
+          <div id="pkArea">
+            <table id="pkTable"></table>
+          </div>
         </div>
         <div id="pkInCont">
-          <input id="refIn" type="text" placeholder="Key Reference Here" />
-          <textarea
-            id="pkIn"
-            rows="5"
-            cols="75"
-            placeholder="Paste Public Keys Here..."
-          ></textarea>
-          <button type="button" id="pkInBtn">Save New Key</button>
+          <div id="pkInArea">
+            <div id="pkTxtIn">
+              <input id="refIn" type="text" placeholder="Key Reference Here" />
+              <textarea
+                id="pkIn"
+                rows="5"
+                cols="75"
+                placeholder="Paste Public Keys Here..."
+              ></textarea>
+            </div>
+            <div id="PKSr1">
+              <button type="button" id="pkInBtn">Save New Key</button>
+              <button type="button" id="pkCopyBtn">
+                Copy <b>PUBLIC</b> Key
+              </button>
+              <button type="button" id="pkDelBtn">Delete Row</button>
+            </div>
+          </div>
         </div>
       </div>
 

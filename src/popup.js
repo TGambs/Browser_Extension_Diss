@@ -97,7 +97,8 @@ function swapPage(pgNum) {
       break;
 
     case 1:
-      strgP.style.display = "block";
+      strgP.style.display = "flex";
+      strgP.style.flexDirection = "column";
       getPubKeyTable();
       break;
 
@@ -334,21 +335,41 @@ async function getPubKeyTable() {
     // make sure it is empty before adding anything new
     table.innerHTML = "";
 
-    // define the layout
-    table.innerHTML = `
-    <tr>
-    <th>Ref</th>
+    // define the header
+    const headerRow = document.createElement("tr");
+    headerRow.innerHTML = `
+    <th>Ref.</th>
     <th>Public Keys</th>
-    </tr>
     `;
 
+    // add the header to the table
+    table.appendChild(headerRow);
+
+    // reset the selected index when the table is reloaded
+    selKeyIndex = null;
+
     keyRef.forEach((ref, i) => {
-      table.innerHTML += `
-      <tr>
-      <td>${ref}</td>
-      <td>${publicSKey[i].slice(0, 40)}...</td>
-      </tr>
+      const row = document.createElement("tr");
+      row.innerHTML = `
+      <td>${ref.slice(0, 35)}</td>
+      <td>${publicSKey[i].slice(0, 35)}...</td>
       `;
+
+      // then for each row add a listener to see if it has been selected
+      row.addEventListener("click", () => {
+        // unselect all rows
+        table
+          .querySelectorAll("tr")
+          .forEach((rw) => rw.classList.remove("selected"));
+
+        // add selected class to what row was clicked
+        row.classList.add("selected");
+
+        //save the index of what was selected
+        selKeyIndex = i;
+        console.log("Row ", selKeyIndex, "has been selected");
+      });
+      table.appendChild(row);
     });
   } else {
     console.error("Error getting Key Table");
@@ -385,8 +406,13 @@ async function wipeAllData() {
     const response = await chrome.runtime.sendMessage({
       action: "wipeAllData",
     });
-    console.log("WIPED ALL DATA");
-    console.log("Response from background:", response);
+
+    if (response.success) {
+      document.getElementById("storageTable").innerHTML = "";
+      document.getElementById("pkTable").innerHTML = "";
+      console.log("WIPED ALL DATA");
+      console.log("Response from background:", response);
+    }
   } catch (error) {
     console.log("Error wiping all stored data: ", error);
   }
@@ -514,7 +540,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const refPubSetBtn = document.getElementById("pkInBtn");
   if (refPubSetBtn) {
-    refPubSetBtn.addEventListener("click", setPubKeyTable);
+    refPubSetBtn.addEventListener("click", async () => {
+      await setPubKeyTable();
+      // clears the inputted values from the input boxes
+      document.getElementById("refIn").value = "";
+      document.getElementById("pkIn").value = "";
+    });
+
     console.log("refPub btn");
   } else {
     console.log("refPub btn not found");
