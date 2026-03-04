@@ -20,6 +20,11 @@
         height: 500px;
         margin: 5px;
       }
+      #keyPgCont {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
       #navBarCont {
         background-color: #c1bfbf;
         width: 100px;
@@ -27,6 +32,7 @@
         margin: 5px;
         display: block;
       }
+
       #keyGenOutput {
         width: 300px;
         height: auto;
@@ -89,7 +95,8 @@
       /*This hides the scrollbar from the text areas*/
       #inData::-webkit-scrollbar,
       #outData::-webkit-scrollbar,
-      #enDeKeyInput::-webkit-scrollbar {
+      #enDeKeyInput::-webkit-scrollbar,
+      #keyArea::-webkit-scrollbar {
         display: none;
       }
 
@@ -112,8 +119,74 @@
         padding: 10px;
       }
 
+      #keyAreaCont {
+        flex: 1;
+        overflow-y: auto;
+      }
       #keyArea {
-        background-color: darksalmon;
+        display: flex;
+        margin: 10px;
+        justify-content: center;
+      }
+      #storageTable {
+        background-color: #f1ccba;
+        border-radius: 5px;
+        table-layout: auto;
+        width: 95%;
+        padding: 5px;
+      }
+      #storageTable th {
+        border-bottom: 2px solid #000;
+      }
+      #storageTable td {
+        /*border-right: 1px solid #000;*/
+        border-bottom: 0.3px dashed #000;
+      }
+      #KGbuttonArea {
+        background-color: rgba(27, 27, 27, 0.7);
+        display: block;
+        padding: 10px;
+        margin: 10px;
+        position: sticky;
+        bottom: 0;
+        border-radius: 10px;
+      }
+      #KGBr1 {
+        /*background-color: chartreuse;*/
+        display: flex;
+        justify-content: space-evenly;
+        padding: 5px;
+      }
+      #KGBr2 {
+        /*background-color: blue;*/
+        display: flex;
+        justify-content: space-evenly;
+        padding: 5px;
+        padding-top: 10px;
+      }
+      #copyPubKGBtn,
+      #deleteKGBtn,
+      #copyPrivKGBtn,
+      #genKeysBtn,
+      #resetNumsBtn {
+        color: white;
+        border-radius: 4px;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+        border: none;
+        padding: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      #copyPubKGBtn,
+      #copyPrivKGBtn {
+        background-color: rgb(30, 182, 65);
+      }
+      #deleteKGBtn,
+      #resetNumsBtn {
+        background-color: rgb(193, 60, 60);
+      }
+      #genKeysBtn {
+        background-color: rgb(65, 185, 221);
       }
 
       #mainBtn,
@@ -129,6 +202,8 @@
         width: 100px;
         height: 50px;
         border: none;
+
+        overflow-y: auto;
       }
       .navBttn:hover {
         opacity: 0.75;
@@ -229,18 +304,23 @@
           <div id="keyArea">
             <table id="storageTable"></table>
           </div>
+        </div>
 
-          <button type="button" id="genKeysBtn">Generate Key</button>
-          <p id="keyGenOutput"></p>
+        <div id="KGbuttonArea">
+          <div id="KGBr1">
+            <button type="button" id="copyPubKGBtn">
+              Copy <b>PUBLIC</b> Key
+            </button>
+            <button type="button" id="deleteKGBtn">Delete Key Pair</button>
+            <button type="button" id="copyPrivKGBtn">
+              Copy <b>PRIVATE</b> Key
+            </button>
+          </div>
 
-          <button type="button" id="resetNumsBtn">Reset Storage</button>
-          <p>Warning! This permanently deletes these saved keys</p>
-          <p id="storageResetAlert"></p>
-
-          <button type="button" id="copyPubKGBtn">Copy Public Key</button>
-          <button type="button" id="copyPrivKGBtn">Copy Private Key</button>
-
-          <button type="button" id="deleteKGBtn">Delete Key Pair</button>
+          <div id="KGBr2">
+            <button type="button" id="genKeysBtn">Generate Key</button>
+            <button type="button" id="resetNumsBtn">Reset Storage</button>
+          </div>
         </div>
       </div>
 
@@ -254,7 +334,7 @@
       <div id="navBarCont">
         <button type="button" id="mainBtn">Main Page</button>
         <button type="button" id="storBtn">Storage Page</button>
-        <button type="button" id="keyBtn">Key Geneneration Page</button>
+        <button type="button" id="keyBtn">Make Key Pair</button>
         <button type="button" id="faqBtn">FAQ Page</button>
       </div>
     </div>

@@ -102,7 +102,7 @@ function swapPage(pgNum) {
       break;
 
     case 2:
-      keyP.style.display = "block";
+      keyP.style.display = "flex";
       getKGStorageTable();
       break;
 
@@ -163,6 +163,12 @@ async function getKGStorageTable() {
   if (response.success) {
     const { pubKeys, privKeys } = response;
 
+    // if the table is empty then exit before the header is shown
+    if (pubKeys.length == 0) {
+      document.getElementById("storageTable").innerHTML = "";
+      return true;
+    }
+
     // get the table from html
     let table = document.getElementById("storageTable");
     // make sure it is empty before adding anything new
@@ -171,7 +177,6 @@ async function getKGStorageTable() {
     // define the header layout as an element
     const headerRow = document.createElement("tr");
     headerRow.innerHTML = `
-    <th>#</th>
     <th>Public Keys</th>
     <th>Private Keys</th>
     `;
@@ -185,9 +190,8 @@ async function getKGStorageTable() {
     pubKeys.forEach((pk, i) => {
       const row = document.createElement("tr");
       row.innerHTML = `
-      <td>${i}</td>
-      <td>${pk.slice(0, 40)}...</td>
-      <td>${privKeys[i].slice(0, 40)}...</td>
+      <td>${pk.slice(0, 35)}...</td>
+      <td>${privKeys[i].slice(0, 35)}...</td>
       `;
 
       // then for each row add a listener to see if it has been selected
@@ -333,7 +337,6 @@ async function getPubKeyTable() {
     // define the layout
     table.innerHTML = `
     <tr>
-    <th>#</th>
     <th>Ref</th>
     <th>Public Keys</th>
     </tr>
@@ -342,7 +345,6 @@ async function getPubKeyTable() {
     keyRef.forEach((ref, i) => {
       table.innerHTML += `
       <tr>
-      <td>${i}</td>
       <td>${ref}</td>
       <td>${publicSKey[i].slice(0, 40)}...</td>
       </tr>
