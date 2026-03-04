@@ -47,7 +47,7 @@
         height: auto;
       }
       #inputContainer {
-        background-color: chocolate;
+        /*background-color: chocolate;*/
         display: flex;
         justify-content: space-evenly;
         align-items: center;
@@ -67,6 +67,8 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        padding: 10px;
+        border-radius: 10px;
       }
       #rightOut {
         background-color: blue;
@@ -82,6 +84,8 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        padding: 10px;
+        border-radius: 10px;
       }
       #inData,
       #outData,
@@ -106,16 +110,17 @@
       }
 
       #Bcont {
-        background-color: dodgerblue;
+        background-color: #a6a4a4;
         display: flex;
         flex-direction: column;
         align-items: center;
         margin: 10px;
         padding: 10px;
+        border-radius: 10px;
       }
 
       #mainButtonArea {
-        background-color: hotpink;
+        /*background-color: hotpink;*/
         display: flex;
         width: 400px;
         justify-content: space-evenly;
@@ -156,7 +161,7 @@
       }
       #KGbuttonArea,
       #pkInCont {
-        background-color: #c1bfbf;
+        background-color: #a6a4a4;
         display: block;
         padding: 10px;
         margin: 10px;
@@ -194,18 +199,23 @@
       #resetNumsBtn,
       #pkInBtn,
       #pkDelBtn,
-      #pkCopyBtn {
+      #pkCopyBtn,
+      #encBtn,
+      #decBtn,
+      #cpyClip {
         color: white;
         border-radius: 4px;
         text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
         border: none;
-        padding: 5px;
+        padding: 8px;
         font-size: 16px;
         cursor: pointer;
       }
       #copyPubKGBtn,
       #copyPrivKGBtn,
-      #pkInBtn {
+      #pkInBtn,
+      #encBtn,
+      #decBtn {
         background-color: rgb(30, 182, 65);
       }
       #deleteKGBtn,
@@ -214,7 +224,8 @@
         background-color: rgb(193, 60, 60);
       }
       #genKeysBtn,
-      #pkCopyBtn {
+      #pkCopyBtn,
+      #cpyClip {
         background-color: rgb(65, 185, 221);
       }
 
