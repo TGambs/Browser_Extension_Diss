@@ -1,19 +1,51 @@
-body {
-  background-color: #3f3f3f;
+/* ----------- Usable Vars ------------*/
+:root {
+  --darkBg: #19192a;
+  --midBg: #182342;
+
+  --redBtnCol: #e94560;
+  --blueBtnCol: #4fc3f7;
+  --greenBtnCol: #43e97b;
+
+  --txtCol1: #e8eaf6;
+
+  --border1: rgba(79, 195, 247, 0.2);
+
+  --smallRad: 4px;
+  --midRad: 9px;
+  --largeRad: 12px;
 }
+/*-----------------------------------------------*/
+
+body {
+  background-color: var(--darkBg);
+  font-family:
+    "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+p {
+  color: var(--txtCol1);
+}
+
+/*----------------------------------------------------*/
+
 #allCont {
   display: flex;
-  background-color: blueviolet;
+  background-color: var(--darkBg);
 }
+
 #mainPgCont,
 #storagePgCont,
 #keyPgCont,
 #faqPgCont {
-  background-color: #3f3f3f;
+  background-color: var(--midBg);
   width: 600px;
   height: 500px;
   margin: 5px;
+  border: 1px solid var(--border1);
+  border-radius: var(--largeRad);
 }
+
 #keyPgCont {
   display: flex;
   flex-direction: column;
@@ -24,12 +56,41 @@ body {
   flex-direction: column;
   overflow: hidden;
 }
+
+/*-------- v -- Everything for navbar -- v ------------ */
 #navBarCont {
-  background-color: #c1bfbf;
+  background-color: var(--midBg);
   width: 100px;
   height: 500px;
   margin: 5px;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--border1);
+  border-radius: var(--largeRad);
+}
+
+#mainBtn,
+#storBtn,
+#keyBtn,
+#faqBtn {
+  background-color: var(--midBg2);
+  margin: 5px 0px;
+  padding: 10px 5px;
+  text-align: center;
+  width: 80px;
+  height: 50px;
+
+  border: 1px solid var(--border1);
+  border-radius: var(--midRad);
+
+  color: var(--txtCol1);
+  font-size: 10px;
+  font-family: inherit;
+
+  cursor: pointer;
+  overflow-y: auto;
 }
 
 #keyGenOutput {
@@ -223,22 +284,6 @@ small {
   background-color: rgb(65, 185, 221);
 }
 
-#mainBtn,
-#storBtn,
-#keyBtn,
-#faqBtn {
-  background-color: #3f3f3f;
-  color: #fff;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding: 5px;
-  text-align: center;
-  width: 100px;
-  height: 50px;
-  border: none;
-
-  overflow-y: auto;
-}
 .navBttn:hover {
   opacity: 0.75;
 }
@@ -257,7 +302,4 @@ small {
 tr:hover {
   opacity: 0.7;
   cursor: pointer;
-}
-p {
-  color: #fff;
 }
