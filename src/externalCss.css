@@ -20,6 +20,12 @@
   --smallRad: 4px;
   --midRad: 9px;
   --largeRad: 12px;
+
+  --tableBg: rgba(15, 52, 96, 0.8);
+  --tableRowSel: rgba(79, 195, 247, 0.25);
+
+  --shadow1: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow2: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /*-----------------------------------------------*/
@@ -100,6 +106,19 @@ p {
   overflow-y: auto;
 }
 
+#mainBtn:hover,
+#storBtn:hover,
+#keyBtn:hover,
+#faqBtn:hover {
+  opacity: 0.75;
+}
+#mainBtn:focus,
+#storBtn:focus,
+#keyBtn:focus,
+#faqBtn:focus {
+  background-color: grey;
+}
+
 /* --------------------- v --- Main Page --- v ----------------*/
 #inputContainer {
   display: flex;
@@ -172,6 +191,7 @@ p {
 #inData::-webkit-scrollbar,
 #outData::-webkit-scrollbar,
 #enDeKeyInput::-webkit-scrollbar,
+#pkIn::-webkit-scrollbar,
 #keyArea::-webkit-scrollbar {
   display: none;
 }
@@ -202,8 +222,7 @@ p {
   padding: 10px;
 }
 
-/*------------------------------------------*/
-
+/*------------------ v - Table Stuff - v ----------------------*/
 #keyAreaCont,
 #pkTableCont {
   flex: 1;
@@ -219,54 +238,101 @@ p {
 
 #storageTable,
 #pkTable {
-  background-color: #f1ccba;
-  border-radius: 5px;
+  background-color: var(--tableBg);
+  border-radius: var(--midRad);
   table-layout: auto;
   width: 95%;
-  padding: 10px;
+  padding: 5px;
+  /*border-collapse: collapse;*/
+  color: var(--txtCol1);
+  font-size: 12px;
+  font-family: inherit;
 }
+
 #storageTable th,
 #pkTable th {
-  border-bottom: 2px solid #000;
+  border-bottom: 2px solid var(--blueBtnCol);
+  color: var(--blueBtnCol);
+  /*text-align: left;*/
+  font-size: 11px;
 }
+
 #storageTable td,
 #pkTable td {
-  /*border-right: 1px solid #000;*/
-  border-bottom: 0.3px dashed #000;
+  border-bottom: 0.3px dashed var(--border1);
+  padding: 2px 5px;
 }
+
+.selected {
+  background-color: var(--tableRowSel);
+  cursor: pointer;
+}
+tr:hover {
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+/* -------- v - Button Divs - v -----------*/
 #KGbuttonArea,
 #pkInCont {
-  background-color: #a6a4a4;
+  background-color: var(--areaBg);
   display: block;
   padding: 10px;
   margin: 10px;
   position: sticky;
   bottom: 0;
-  border-radius: 10px;
+  border-radius: var(--largeRad);
+  border: 1px solid var(--border1);
+  box-shadow: var(--shadow1);
 }
-#pkTxtIn {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-#pkIn {
-  resize: none;
-}
+
 #KGBr1,
 #PKSr1 {
-  /*background-color: chartreuse;*/
   display: flex;
   justify-content: space-evenly;
   padding: 5px;
 }
+
 #KGBr2 {
-  /*background-color: blue;*/
   display: flex;
   justify-content: space-evenly;
   padding: 5px;
   padding-top: 10px;
 }
+
+/* ---------------- PK storage page--------------------*/
+#pkTxtIn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 10px;
+  gap: 5px;
+}
+
+#pkIn {
+  resize: none;
+  background-color: var(--inputBg);
+  border: 1px solid var(--border2);
+  border-radius: var(--midBg);
+  color: var(--txtCol1);
+  font-family: inherit;
+}
+
+#refIn {
+  background-color: var(--inputBg);
+  border: 1px solid var(--border2);
+  border-radius: var(--midBg);
+  color: var(--txtCol1);
+  font-family: inherit;
+}
+
+#pkIn::placeholder,
+#refIn::placeholder {
+  color: var(--txtCol2);
+}
+
+/* ---------------------- buttons ----------------*/
+
 #copyPubKGBtn,
 #deleteKGBtn,
 #copyPrivKGBtn,
@@ -278,48 +344,48 @@ p {
 #encBtn,
 #decBtn,
 #cpyClip {
-  color: white;
-  border-radius: 4px;
+  color: var(--txtCol1);
+  border-radius: var(--smallRad);
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   border: none;
-  padding: 8px;
+  padding: 8px 12px;
   font-size: 16px;
+  font-family: inherit;
   cursor: pointer;
+  box-shadow: var(--shadow2);
 }
+#copyPubKGBtn:hover,
+#deleteKGBtn:hover,
+#copyPrivKGBtn:hover,
+#genKeysBtn:hover,
+#resetNumsBtn:hover,
+#pkInBtn:hover,
+#pkDelBtn:hover,
+#pkCopyBtn:hover,
+#encBtn:hover,
+#decBtn:hover,
+#cpyClip:hover {
+  opacity: 0.75;
+}
+
 #copyPubKGBtn,
 #copyPrivKGBtn,
 #pkInBtn,
 #encBtn,
 #decBtn {
-  background-color: rgb(30, 182, 65);
+  background-color: var(--greenBtnCol);
+  color: var(--txtCol3);
 }
+
 #deleteKGBtn,
 #resetNumsBtn,
 #pkDelBtn {
-  background-color: rgb(193, 60, 60);
+  background-color: var(--redBtnCol);
+  color: var(--txtCol3);
 }
 #genKeysBtn,
 #pkCopyBtn,
 #cpyClip {
-  background-color: rgb(65, 185, 221);
-}
-
-.navBttn:hover {
-  opacity: 0.75;
-}
-.navBttn:focus {
-  background-color: grey;
-}
-
-.encBtn {
-  display: block;
-}
-
-.selected {
-  background-color: #98bffd;
-  cursor: pointer;
-}
-tr:hover {
-  opacity: 0.7;
-  cursor: pointer;
+  background-color: var(--blueBtnCol);
+  color: var(--txtCol3);
 }
