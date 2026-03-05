@@ -2,19 +2,26 @@
 :root {
   --darkBg: #19192a;
   --midBg: #182342;
+  --midBg2: #0f3460;
+  --areaBg: #1e2a46;
+  --inputBg: #162145;
 
   --redBtnCol: #e94560;
   --blueBtnCol: #4fc3f7;
   --greenBtnCol: #43e97b;
 
-  --txtCol1: #e8eaf6;
+  --txtCol1: #e3e4f0;
+  --txtCol2: #9caeb6;
+  --txtCol3: #1a1a31;
 
   --border1: rgba(79, 195, 247, 0.2);
+  --border2: rgba(79, 195, 247, 0.6);
 
   --smallRad: 4px;
   --midRad: 9px;
   --largeRad: 12px;
 }
+
 /*-----------------------------------------------*/
 
 body {
@@ -93,69 +100,74 @@ p {
   overflow-y: auto;
 }
 
-#keyGenOutput {
-  width: 300px;
-  height: auto;
-}
-small {
-  width: 300px;
-  height: auto;
-}
+/* --------------------- v --- Main Page --- v ----------------*/
 #inputContainer {
-  /*background-color: chocolate;*/
   display: flex;
   justify-content: space-evenly;
   align-items: center;
   padding: 10px;
 }
-#leftIn {
-  background-color: red;
-  width: 244px;
-  height: 208px;
-  margin: 5px;
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 7px;
-}
+
 #Lcont {
-  background-color: brown;
+  background-color: var(--areaBg);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: var(--largeRad);
+  border: 1px solid var(--border1);
 }
-#rightOut {
-  background-color: blue;
+
+#Rcont {
+  background-color: var(--areaBg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  border-radius: var(--largeRad);
+  border: 1px solid var(--border1);
+}
+
+#leftIn {
+  background-color: var(--inputBg);
   width: 244px;
   height: 208px;
   margin: 5px;
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 7px;
+  border-radius: var(--midRad);
+  border: 1px solid var(--border2);
 }
-#Rcont {
-  background-color: aqua;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px;
-  border-radius: 10px;
+
+#rightOut {
+  background-color: var(--inputBg);
+  width: 244px;
+  height: 208px;
+  margin: 5px;
+  border-radius: var(--midRad);
+  border: 1px solid var(--border2);
 }
+
 #inData,
 #outData,
 #enDeKeyInput {
   resize: none;
-  background: rgba(255, 179, 0, 0.311);
+  background: transparent;
   border-width: 0px;
-  border-radius: 7px;
+  border-radius: var(--midRad);
   font-size: x-small;
+  color: var(--txtCol1);
+  font-family: inherit;
+  padding: 4px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
 }
+
 #inData::placeholder,
 #outData::placeholder,
 #enDeKeyInput::placeholder {
-  color: black;
+  color: var(--txtCol2);
 }
+
 /*This hides the scrollbar from the text areas*/
 #inData::-webkit-scrollbar,
 #outData::-webkit-scrollbar,
@@ -165,24 +177,32 @@ small {
 }
 
 #Bcont {
-  background-color: #a6a4a4;
+  background-color: var(--areaBg);
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: 10px;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: var(--largeRad);
+  border: 1px solid var(--border1);
+}
+
+#enDeKeyInput {
+  background-color: var(--inputBg);
+  border: 1px solid var(--border2);
+  border-radius: var(--midRad);
+  padding: 5px;
 }
 
 #mainButtonArea {
-  /*background-color: hotpink;*/
   display: flex;
   width: 400px;
   justify-content: space-evenly;
-
   margin: 10px;
   padding: 10px;
 }
+
+/*------------------------------------------*/
 
 #keyAreaCont,
 #pkTableCont {
